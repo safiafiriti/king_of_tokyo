@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">KingOfTokyo</string>
     <string name="play">PLAY</string>
+    <string name="barTitle">Pick your avatar</string>
+    <string name="nextButton">Next</string>
+    <string name="rexzilla">Rexzilla</string>
+    <string name="meko">Meko</string>
+    <string name="grumpjaw">Grumpjaw</string>
+    <string name="venomunch">Venomunch</string>
 </resources>

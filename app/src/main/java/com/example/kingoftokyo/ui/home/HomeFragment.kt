@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
 
 class HomeFragment : Fragment() {
@@ -26,8 +27,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val playButton: Button = view.findViewById(R.id.PlayButton)
         playButton.setOnClickListener {
-            // Example navigation to Page1Fragment (you’ll create it later)
-            //findNavController().navigate(R.id.action_homeFragment_to_page1Fragment)
+            findNavController().navigate(R.id.action_homeFragment_to_playerSetUpFragment)
         }
     }
 }

@@ -9,5 +9,14 @@
         android:id="@+id/homeFragment"
         android:name="com.example.kingoftokyo.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_playerSetUpFragment"
+            app:destination="@id/playerSetUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playerSetUpFragment"
+        android:name="com.example.kingoftokyo.ui.playerSetup.PlayerSetUpFragment"
+        android:label="fragment_player_set_up"
+        tools:layout="@layout/fragment_player_set_up" />
 </navigation>
