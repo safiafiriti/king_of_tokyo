@@ -23,6 +23,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/logo" />
 
+
     <Button
         android:id="@+id/PlayButton"
         android:layout_width="255dp"
@@ -39,4 +40,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfettiView"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="@+id/PlayButton"
+        app:layout_constraintTop_toTopOf="@+id/PlayButton"
+        app:layout_constraintStart_toStartOf="@+id/PlayButton"
+        app:layout_constraintEnd_toEndOf="@+id/PlayButton"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
