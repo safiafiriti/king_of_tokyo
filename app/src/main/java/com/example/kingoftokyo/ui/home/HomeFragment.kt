@@ -27,7 +27,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val playButton: Button = view.findViewById(R.id.PlayButton)
         playButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_playerSetUpFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_rulesFragment)
         }
     }
 }
