@@ -26,6 +26,11 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val playButton: Button = view.findViewById(R.id.PlayButton)
+
+        // Start the floating animation
+        val floatAnim = android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.floating)
+        playButton.startAnimation(floatAnim)
+
         playButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_rulesFragment)
         }
