@@ -28,4 +28,13 @@
             android:id="@+id/action_rulesFragment_to_playerSetUpFragment"
             app:destination="@id/playerSetUpFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/lostGameFragment"
+        android:name="com.example.kingoftokyo.ui.lostGame.LostGameFragment"
+        android:label="fragment_lost_game"
+        tools:layout="@layout/fragment_lost_game" >
+        <action
+            android:id="@+id/action_lostGameFragment_to_playerSetUpFragment"
+            app:destination="@id/playerSetUpFragment" />
+    </fragment>
 </navigation>
