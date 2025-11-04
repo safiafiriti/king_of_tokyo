@@ -3,6 +3,8 @@
     <string name="play">PLAY</string>
     <string name="barTitle">Pick your avatar</string>
     <string name="nextButton">Next</string>
+    <string name="replayButton">Replay</string>
+    <string name="leaveButton">Leave</string>
     <string name="rexzilla">Rexzilla</string>
     <string name="meko">Meko</string>
     <string name="grumpjaw">Grumpjaw</string>
