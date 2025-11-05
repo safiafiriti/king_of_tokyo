@@ -28,4 +28,13 @@
             android:id="@+id/action_rulesFragment_to_playerSetUpFragment"
             app:destination="@id/playerSetUpFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/wonGameFragment"
+        android:name="com.example.kingoftokyo.ui.wonGame.WonGameFragment"
+        android:label="fragment_won_game"
+        tools:layout="@layout/fragment_won_game" >
+        <action
+            android:id="@+id/action_wonGameFragment_to_playerSetUpFragment"
+            app:destination="@id/playerSetUpFragment" />
+    </fragment>
 </navigation>
