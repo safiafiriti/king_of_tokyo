@@ -5,11 +5,15 @@
     <string name="nextButton">Next</string>
     <string name="replayButton">Replay</string>
     <string name="leaveButton">Leave</string>
-    <string name="rexzilla">Rexzilla</string>
+    <string name="rexmax">Rexmax</string>
     <string name="meko">Meko</string>
     <string name="grumpjaw">Grumpjaw</string>
-    <string name="venomunch">Venomunch</string>
+    <string name="venomjunch">Venomjunch</string>
     <string name="rules">Rules</string>
     <string name="skip">Skip</string>
     <string name="rulesText">📜 Game Rules: King of Tokyo\nYou play as a giant monster battling for control over Tokyo.\nThere are 2 ways to win:\n🏆 Reach 20 Victory Points\n💀 Be the last monster standing\n\n🎲 On Your Turn:\n1. Roll up to 3 times with 6 dice.\n2. Choose which dice to keep or reroll.\n3. Resolve the dice effects:\n   • 1 / 2 / 3: Gain Victory Points if you roll 3+ of the same number.\n   • 🐾 Claw: Damage other monsters.\n   • ❤️ Heart: Heal yourself (only if not in Tokyo).\n   • ⚡ Energy: Gain energy cubes to buy Power Cards.\n\n🗼 Tokyo Rules:\n• If Tokyo is empty, you must enter.\n• While in Tokyo:\n   - You gain 1 VP on entry.\n   - You gain 2 VP if you start your turn in Tokyo.\n   - You can’t heal with ❤️ dice.\n   - When attacked, you may leave Tokyo, letting your attacker enter.\n\n🃏 Power Cards:\n• Spend ⚡ energy to buy cards with special powers.\n• 2 types of cards:\n   - Action (one-time effect)\n   - Power (permanent effect)\n\nGood luck, monster! 👾 May you become the true King of Tokyo!</string>
+    <string name="roll">Roll</string>
+    <string name="reroll">Reroll</string>
+    <string name="validate">Validate</string>
+    <string name="rounds">Round N°1</string>
 </resources>
