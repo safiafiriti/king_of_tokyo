@@ -18,7 +18,11 @@
         android:id="@+id/playerSetUpFragment"
         android:name="com.example.kingoftokyo.ui.playerSetup.PlayerSetUpFragment"
         android:label="fragment_player_set_up"
-        tools:layout="@layout/fragment_player_set_up" />
+        tools:layout="@layout/fragment_player_set_up" >
+        <action
+            android:id="@+id/action_playerSetUpFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
     <fragment
         android:id="@+id/rulesFragment"
         android:name="com.example.kingoftokyo.ui.rules.RulesFragment"
@@ -45,5 +49,17 @@
         <action
             android:id="@+id/action_wonGameFragment_to_playerSetUpFragment"
             app:destination="@id/playerSetUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.example.kingoftokyo.ui.game.GameFragment"
+        android:label="fragment_game"
+        tools:layout="@layout/fragment_game" >
+        <action
+            android:id="@+id/action_gameFragment_to_lostGameFragment"
+            app:destination="@id/lostGameFragment" />
+        <action
+            android:id="@+id/action_gameFragment_to_wonGameFragment"
+            app:destination="@id/wonGameFragment" />
     </fragment>
 </navigation>
