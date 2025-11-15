@@ -47,11 +47,38 @@ class GameManager {
         pendingTokyoDecisionFor = null
     }
 
-    fun startTurn() {}
+    fun startTurn() {
+        val p = currentPlayer()
 
-    fun rollDice(){}
+        if (p.location == Location.TOKYO) {
+            p.victoryPoints += 2
+        }
 
-    fun rerollDice(indexes: List<Int>) {}
+        dice.clear()
+        rerollCount = 0
+        pendingTokyoDecisionFor = null
+
+        checkEndGame()
+    }
+
+    fun rollDice() {
+        if (dice.isEmpty()) {
+            dice = MutableList(6) { DiceSymbol.values().random() }
+            rerollCount = 0
+        }
+    }
+
+    fun rerollDice(indexes: List<Int>) {
+        if (dice.isEmpty()) return
+        if (rerollCount >= 2) return
+
+        for (i in indexes) {
+            if (i in 0 until dice.size) {
+                dice[i] = DiceSymbol.values().random()
+            }
+        }
+        rerollCount++
+    }
 
     fun resolveDice() {}
 
