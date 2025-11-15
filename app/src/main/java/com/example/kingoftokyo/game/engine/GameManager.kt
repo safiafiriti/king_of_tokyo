@@ -17,6 +17,7 @@ class GameManager {
     var pendingTokyoDecisionFor: Player? = null
 
     fun initGame(playerNames: List<String>) {
+        require(playerNames.isNotEmpty()) { "At least one player name required"}
         val list = mutableListOf<Player>()
 
         list.add(
@@ -48,6 +49,10 @@ class GameManager {
     }
 
     fun startTurn() {
+        if (!currentPlayer().alive) {
+            advanceToNextAlivePlayer()
+        }
+
         val p = currentPlayer()
 
         if (p.location == Location.TOKYO) {
@@ -83,6 +88,7 @@ class GameManager {
     fun resolveDice() {
         if (dice.isEmpty()) return
         val current = currentPlayer()
+        if (!current.alive) return
 
         val count = dice.groupingBy { it }.eachCount()
 
@@ -101,7 +107,9 @@ class GameManager {
             current.health = (current.health + nbHeart).coerceAtMost(10)
         }
 
-        current.energy += nbEnergy
+        if (nbEnergy > 0){
+            current.energy += nbEnergy
+        }
 
         if (nbClaw > 0) {
             applyClawDamage(current, nbClaw)
@@ -117,13 +125,59 @@ class GameManager {
         checkEndGame()
     }
 
+    fun leaveTokyo(attackedPlayer: Player) {
+        if (attackedPlayer.location == Location.TOKYO && attackedPlayer.alive) {
+            attackedPlayer.location = Location.OUTSIDE
+
+            val attacker = currentPlayer()
+            if (attacker.alive) {
+                attacker.location = Location.TOKYO
+                attacker.victoryPoints += 1
+            }
+        }
+
+        pendingTokyoDecisionFor = null
+        checkEndGame()
+    }
+
     fun handleTokyoAfterAttack(attackedPlayer: Player) {}
 
-    fun buyCard(cardId: Int) {}
+    fun buyCard(cardId: Int) {
 
-    fun endTurn() {}
+    }
 
-    fun checkEndGame() {}
+    fun endTurn() {
+        if (gameEnded) return
+        do {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size
+        } while (!currentPlayer().alive)
+
+        dice.clear()
+        rerollCount = 0
+        pendingTokyoDecisionFor = null
+    }
+
+    fun checkEndGame() {
+        val vpWinner = players.firstOrNull { it.alive && it.victoryPoints >= 20 }
+        if (vpWinner != null) {
+            gameEnded = true
+            winnerId = vpWinner.id
+            return
+        }
+
+        val alive = players.filter { it.alive }
+        if (alive.size == 1) {
+            gameEnded = true
+            winnerId = alive.first().id
+            return
+        }
+
+        if (alive.isEmpty()) {
+            gameEnded = true
+            winnerId = null
+            return
+        }
+    }
 
     fun currentPlayer(): Player {
         return players[currentPlayerIndex]
@@ -172,4 +226,19 @@ class GameManager {
         }
     }
 
+    private fun advanceToNextAlivePlayer() {
+        if (!::players.isInitialized || players.isEmpty()) return
+
+        var nextIndex = currentPlayerIndex
+        var loopCount = 0
+
+        do {
+            nextIndex = (nextIndex + 1) % players.size
+            loopCount++
+            if (loopCount > players.size) break // sécurité si tout le monde est mort
+        } while (!players[nextIndex].alive)
+
+        currentPlayerIndex = nextIndex
+    }
 }
+
