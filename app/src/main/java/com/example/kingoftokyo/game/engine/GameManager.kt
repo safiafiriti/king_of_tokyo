@@ -67,4 +67,47 @@ class GameManager {
         return players[currentPlayerIndex]
     }
 
+    private fun applyNumberVp(player: Player, symbol: DiceSymbol, count: Int) {
+        if (count >= 3) {
+            val base = when(symbol) {
+                DiceSymbol.ONE -> 1
+                DiceSymbol.TWO -> 2
+                DiceSymbol.THREE -> 3
+                else -> 0
+            }
+            val extra = count - 3
+            player.victoryPoints += base + extra
+        }
+    }
+
+    private fun applyClawDamage(attacker: Player, damage: Int) {
+        val attackerInTokyo = attacker.location == Location.TOKYO
+
+        players.forEach { target ->
+            if (!target.alive || target.id == attacker.id) return@forEach
+
+            val shouldHit =
+                if (attackerInTokyo) target.location == Location.OUTSIDE
+                else target.location == Location.TOKYO
+
+            if (shouldHit) {
+                target.health -= damage
+                if (target.health > 0 && target.location == Location.TOKYO) {
+                    pendingTokyoDecisionFor = target
+                }
+            }
+        }
+    }
+
+    private fun eliminateDeadPlayers() {
+        players.forEach { p ->
+            if (p.health <= 0) {
+                p.alive = false
+                p.location = Location.OUTSIDE
+                p.energy = 0
+                p.cards.clear()
+            }
+        }
+    }
+
 }
