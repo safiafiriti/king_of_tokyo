@@ -80,7 +80,42 @@ class GameManager {
         rerollCount++
     }
 
-    fun resolveDice() {}
+    fun resolveDice() {
+        if (dice.isEmpty()) return
+        val current = currentPlayer()
+
+        val count = dice.groupingBy { it }.eachCount()
+
+        val nbClaw = count[DiceSymbol.CLAW] ?: 0
+        val nbHeart = count[DiceSymbol.HEART] ?: 0
+        val nbEnergy = count[DiceSymbol.ENERGY] ?: 0
+        val nbOne = count[DiceSymbol.ONE] ?: 0
+        val nbTwo = count[DiceSymbol.TWO] ?: 0
+        val nbThree = count[DiceSymbol.THREE] ?: 0
+
+        applyNumberVp(current, DiceSymbol.ONE, nbOne)
+        applyNumberVp(current, DiceSymbol.TWO, nbTwo)
+        applyNumberVp(current, DiceSymbol.THREE, nbThree)
+
+        if (current.location == Location.OUTSIDE && nbHeart > 0) {
+            current.health = (current.health + nbHeart).coerceAtMost(10)
+        }
+
+        current.energy += nbEnergy
+
+        if (nbClaw > 0) {
+            applyClawDamage(current, nbClaw)
+        }
+
+        eliminateDeadPlayers()
+
+        if (!players.any { it.location == Location.TOKYO && it.alive } && current.alive) {
+            current.location = Location.TOKYO
+            current.victoryPoints += 1
+        }
+
+        checkEndGame()
+    }
 
     fun handleTokyoAfterAttack(attackedPlayer: Player) {}
 
