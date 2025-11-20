@@ -50,5 +50,35 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
             R.anim.popup_enter
         )
         popup.startAnimation(anim)
+
+        val card1: ImageView = view.findViewById(R.id.card_image_1)
+        val card2: ImageView = view.findViewById(R.id.card_image_2)
+        val card3: ImageView = view.findViewById(R.id.card_image_3)
+        cardViews = listOf(card1, card2, card3)
+
+        val cancelButton: Button = view.findViewById(R.id.button_cancel)
+        val buyButton: Button = view.findViewById(R.id.button_buy)
+
+        cardViews.forEachIndexed { index, imageView ->
+            imageView.setOnClickListener {
+                onCardClicked(index)
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        buyButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun onCardClicked(index: Int) {
+        selectedIndex = index
+
+        cardViews.forEachIndexed { i, imageView ->
+            imageView.alpha = if (i == index) 1.0f else 0.5f
+        }
     }
 }
