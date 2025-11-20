@@ -16,4 +16,6 @@
     <string name="reroll">Reroll</string>
     <string name="validate">Validate</string>
     <string name="rounds">Round N°1</string>
+    <string name="buy">Buy</string>
+    <string name="cancel">Cancel</string>
 </resources>
