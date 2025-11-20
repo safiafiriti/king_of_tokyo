@@ -62,4 +62,14 @@
             android:id="@+id/action_gameFragment_to_wonGameFragment"
             app:destination="@id/wonGameFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/powerCardFragment"
+        android:name="com.example.kingoftokyo.ui.powerCards.PowerCardFragment"
+        android:label="fragment_power_card"
+        tools:layout="@layout/fragment_power_card" >
+
+        <action
+            android:id="@+id/action_powerCardFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
 </navigation>
