@@ -72,4 +72,13 @@
             android:id="@+id/action_powerCardFragment_to_gameFragment"
             app:destination="@id/gameFragment" />
     </dialog>
+    <dialog
+        android:id="@+id/stayLeaveTokyoFragment"
+        android:name="com.example.kingoftokyo.ui.stayTokyo.StayLeaveTokyoFragment"
+        android:label="StayLeaveTokyoFragment"
+        tools:layout="@layout/fragment_stay_leave_tokyo" >
+        <action
+            android:id="@+id/action_stayLeaveTokyoFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </dialog>
 </navigation>
