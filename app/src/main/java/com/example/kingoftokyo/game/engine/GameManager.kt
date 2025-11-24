@@ -112,9 +112,9 @@ class GameManager {
         if (gameEnded) return
 
         rollsThisTurn = 0
-        dice.forEach { die ->
-            die.unlock()
-        }
+//        dice.forEach { die ->
+//            die.unlock()
+//        }
     }
 
     val currentPlayer: Player
@@ -124,6 +124,10 @@ class GameManager {
     fun rollDice() {
         if (gameEnded) return
         if (rollsThisTurn >= maxRollsPerTurn) return
+
+        if (rollsThisTurn == 0) {
+            dice.forEach { it.unlock() }
+        }
 
         dice.forEach { it.roll() }
         rollsThisTurn++
@@ -148,6 +152,9 @@ class GameManager {
         dice[index].toggleLock()
     }
 
+    fun lockAllDice() {
+        dice.forEach { it.lock() }
+    }
 
     fun resolveDice() {
         if (gameEnded) return

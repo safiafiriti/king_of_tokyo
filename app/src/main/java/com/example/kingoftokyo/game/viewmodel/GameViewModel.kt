@@ -52,6 +52,11 @@ class GameViewModel : ViewModel() {
     }
 
     fun onValidateClicked() {
+
+        // 0️⃣ Lock ALL the dice visually + logically
+        gameManager.lockAllDice()
+        refreshState()
+
         // 1 On résout les dés (soins, dégâts, VP, gains d'énergie)
         gameManager.resolveDice()
         refreshState()
