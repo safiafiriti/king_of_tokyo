@@ -51,7 +51,6 @@
             app:destination="@id/playerSetUpFragment" />
     </fragment>
 
-    <!-- GAME FRAGMENT CORRIGÉ -->
     <fragment
         android:id="@+id/gameFragment"
         android:name="com.example.kingoftokyo.ui.game.GameFragment"
@@ -63,13 +62,12 @@
         <action
             android:id="@+id/action_gameFragment_to_wonGameFragment"
             app:destination="@id/wonGameFragment" />
-
-        <!-- C'EST CETTE LIGNE QU'IL MANQUAIT -->
         <action
             android:id="@+id/action_gameFragment_to_powerCardFragment"
             app:destination="@id/powerCardFragment" />
 
-        <!-- J'ajoute aussi celle pour Stay/Leave Tokyo au cas où tu en aies besoin plus tard -->
+
+
         <action
             android:id="@+id/action_gameFragment_to_stayLeaveTokyoFragment"
             app:destination="@id/stayLeaveTokyoFragment" />
