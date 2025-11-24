@@ -6,7 +6,7 @@ import com.example.kingoftokyo.game.model.DiceSymbol
 import com.example.kingoftokyo.game.model.GameDie
 import com.example.kingoftokyo.game.model.Location
 import com.example.kingoftokyo.game.model.Player
-
+import com.example.kingoftokyo.R
 class GameManager {
 
     val players: MutableList<Player> = mutableListOf()
@@ -25,6 +25,9 @@ class GameManager {
     private var rollsThisTurn: Int = 0
     private val maxRollsPerTurn = 3
 
+    // Pioche et Boutique
+    private val deck: MutableList<Card> = mutableListOf()
+    val marketCards: MutableList<Card?> = mutableListOf(null, null, null) // 3 choix
 
     fun initGame(playerNames: List<String>) {
         players.clear()
@@ -51,8 +54,60 @@ class GameManager {
             it.unlock()
             it.roll()
         }
+
+        // Initialiser la pioche et la boutique
+        initDeck()
+        refillMarket()
     }
 
+
+    // Fonction qui initialise la pioche
+    private fun initDeck() {
+        deck.clear()
+        // On crée les cartes manuellement en lien avec tes drawables
+        deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
+        deck.add(Card(2, "Armor Plating", 4, CardType.POWER, "Ignore 1 damage", R.drawable.iron_shell_card)) // iron_shell pour l'exemple
+        deck.add(Card(3, "Energy Magnet", 3, CardType.POWER, "Gain energy when others do", R.drawable.energy_magnet_card))
+        deck.add(Card(4, "Spiky Armor", 5, CardType.POWER, "Deal dmg when attacked", R.drawable.spiky_armor_card))
+        deck.add(Card(5, "Solar Absorbal", 4, CardType.POWER, "Gain energy on other's loss", R.drawable.solar_absorbal_card))
+        deck.add(Card(6, "Mega Battery", 4, CardType.POWER, "Gain energy at start turn", R.drawable.mega_battery_card))
+        deck.add(Card(7, "Toxic Breath", 5, CardType.POWER, "Extra damage on attack", R.drawable.toxic_vreath_card)) // attention au nom du fichier vreath/breath
+        deck.add(Card(8, "Colossal Claws", 7, CardType.POWER, "Extra damage", R.drawable.colossal_claws))
+        deck.add(Card(9, "Regeneration", 6, CardType.POWER, "Heal at start turn", R.drawable.regeneration_core_card))
+        deck.add(Card(10, "Super Reroll", 4, CardType.POWER, "+1 Reroll", R.drawable.super_reroll_card))
+        deck.shuffle() // Mélanger pour l'aléatoire
+    }
+
+    private fun refillMarket() {
+        for (i in 0 until 3) {
+            if (marketCards[i] == null && deck.isNotEmpty()) {
+                marketCards[i] = deck.removeAt(0)
+            }
+        }
+    }
+
+    // Retourne true si l'achat a réussi
+    fun buyCard(player: Player, marketIndex: Int): Boolean {
+        val card = marketCards.getOrNull(marketIndex) ?: return false
+
+        if (player.energy >= card.cost) {
+            player.spendEnergy(card.cost)
+
+            // Appliquer l'effet (Simplifié ici : on ajoute juste à la liste du joueur)
+            if (card.type == CardType.POWER) {
+                player.cards.add(card)
+            } else {
+                // Action immédiate (à implémenter selon l'effet)
+                // Ex: if(card.name == "Heal") player.heal(2)
+            }
+
+            // Retirer de la boutique et remplacer
+            marketCards[marketIndex] = null
+            refillMarket()
+            return true
+        }
+        return false
+    }
     fun startTurn() {
         if (gameEnded) return
 

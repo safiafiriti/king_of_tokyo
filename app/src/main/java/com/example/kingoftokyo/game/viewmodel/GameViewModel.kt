@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.kingoftokyo.game.engine.GameManager
+import com.example.kingoftokyo.game.model.Card
 import com.example.kingoftokyo.game.model.DiceSymbol
 import com.example.kingoftokyo.game.model.Player
 
@@ -34,6 +35,14 @@ class GameViewModel : ViewModel() {
     private val _diceLocked = MutableLiveData<List<Boolean>>()
     val diceLocked: LiveData<List<Boolean>> = _diceLocked
 
+    // LiveData pour la boutique
+    private val _marketCards = MutableLiveData<List<Card?>>()
+    val marketCards: LiveData<List<Card?>> = _marketCards
+
+    // Evénement pour ouvrir la popup (True = ouvrir)
+    private val _showShopEvent = MutableLiveData<Boolean>()
+    val showShopEvent: LiveData<Boolean> = _showShopEvent
+
 
     fun startNewGame(playerNames: List<String>) {
         gameManager.initGame(playerNames)
@@ -42,6 +51,53 @@ class GameViewModel : ViewModel() {
         refreshState()
     }
 
+    fun onValidateClicked() {
+        // 1 On résout les dés (soins, dégâts, VP, gains d'énergie)
+        gameManager.resolveDice()
+        refreshState()
+
+        // 2 Si le jeu est fini on arrête tout
+        if (gameManager.gameEnded) {
+            _gameEnded.value = true
+            _winnerId.value = gameManager.winnerId
+            return
+        }
+
+        val player = gameManager.currentPlayer
+
+        // 3 LOGIQUE BOUTIQUE :
+        // Si c'est un humain et qu'il a assez d'énergie (>= 3)-> on ouvre la boutique
+        // Sinonon termine le tour
+        if (player.isHuman && player.energy >= 3) {
+            _marketCards.value = gameManager.marketCards.toList()
+            _showShopEvent.value = true
+        } else {
+            endTurnProperly()
+        }
+    }
+
+
+    fun onBuyCard(index: Int) {
+        val player = gameManager.currentPlayer
+        val success = gameManager.buyCard(player, index)
+        if (success) {
+            refreshState()
+            // Met à jour la boutique pour voir la nouvelle carte (si le joueur veut en acheter une autre)
+            _marketCards.value = gameManager.marketCards.toList()
+        }
+    }
+
+    fun onCloseShop() {
+        _showShopEvent.value = false
+        endTurnProperly()
+    }
+
+    private fun endTurnProperly() {
+        gameManager.endTurn()
+        gameManager.startTurn()
+        _rollsThisTurn.value = 0
+        refreshState()
+    }
     fun startGameWithSelectedMonster(selectedMonster: String) {
         humanPlayerSelectedMonster = selectedMonster
         // Assign the human player to the selected monster
@@ -64,21 +120,6 @@ class GameViewModel : ViewModel() {
         refreshState()
     }
 
-    fun onValidateClicked() {
-        gameManager.resolveDice()
-        refreshState()
-
-        if (gameManager.gameEnded) {
-            _gameEnded.value = true
-            _winnerId.value = gameManager.winnerId
-            return
-        }
-
-        gameManager.endTurn()
-        gameManager.startTurn()
-        _rollsThisTurn.value = 0
-        refreshState()
-    }
 
 
     private fun refreshState() {

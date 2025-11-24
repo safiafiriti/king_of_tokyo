@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
 import com.example.kingoftokyo.game.model.DiceSymbol
 import com.example.kingoftokyo.game.model.Player
@@ -88,6 +89,18 @@ class GameFragment : Fragment(R.layout.fragment_game) {
 
         validateButton.setOnClickListener {
             viewModel.onValidateClicked()
+        }
+
+        viewModel.showShopEvent.observe(viewLifecycleOwner) { shouldShow ->
+            if (shouldShow) {
+                // Utiliser findNavController pour ouvrir le dialog via le nav_graph
+                // Assure-toi que l'ID correspond bien à celui dans nav_graph.xml
+                // Pour éviter les crashs si déjà ouvert, on vérifie currentDestination
+                val currentDest = findNavController().currentDestination?.id
+                if (currentDest == R.id.gameFragment) {
+                    findNavController().navigate(R.id.action_gameFragment_to_powerCardFragment)
+                }
+            }
         }
 
         diceViews.forEachIndexed { index, imageView ->

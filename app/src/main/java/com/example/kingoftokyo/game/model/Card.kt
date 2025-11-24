@@ -6,4 +6,5 @@ data class Card(
     val cost: Int,
     val type: CardType,
     val description: String,
+    val imageResId: Int // Pour lier à l'image
 )
