@@ -3,6 +3,8 @@ package com.example.kingoftokyo.ui.playerSetup
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.kingoftokyo.game.viewmodel.GameViewModel
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
 
 class PlayerSetUpFragment : Fragment() {
+
+    private val viewModel: GameViewModel by activityViewModels()
 
     private lateinit var selectedCard: CardView
     private var selectedAvatar: String? = null
@@ -64,6 +68,7 @@ class PlayerSetUpFragment : Fragment() {
         nextButton.setOnClickListener {
             if (selectedAvatar != null) {
                 Toast.makeText(requireContext(), "Selected: $selectedAvatar", Toast.LENGTH_SHORT).show()
+                viewModel.startGameWithSelectedMonster(selectedAvatar!!)
                 // NAVIGATE
                 findNavController().navigate(R.id.action_playerSetUpFragment_to_gameFragment)
             } else {
