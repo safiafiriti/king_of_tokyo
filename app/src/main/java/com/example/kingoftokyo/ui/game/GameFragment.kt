@@ -58,6 +58,9 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         validateButton = view.findViewById(R.id.validateButton)
         shopButton = view.findViewById(R.id.shop_button) // Bind
 
+        validateButton.isEnabled = false
+        validateButton.alpha = 0.5f
+
         diceViews = listOf(
             view.findViewById(R.id.dice1),
             view.findViewById(R.id.dice2),
