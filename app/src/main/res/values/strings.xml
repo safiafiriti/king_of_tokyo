@@ -5,7 +5,7 @@
     <string name="nextButton">Next</string>
     <string name="replayButton">Replay</string>
     <string name="leaveButton">Leave</string>
-    <string name="rexmax">Rexmax</string>
+    <string name="rexmaw">Rexmaw</string>
     <string name="meko">Meko</string>
     <string name="grumpjaw">Grumpjaw</string>
     <string name="venomjunch">Venomjunch</string>
@@ -18,7 +18,6 @@
     <string name="rounds">Round N°1</string>
     <string name="buy">Buy</string>
     <string name="cancel">Cancel</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stay_or_leave_tokyo">Stay or Leave Tokyo ?</string>
     <string name="stay_in_tokyo">Stay in Tokyo</string>

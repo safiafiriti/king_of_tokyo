@@ -36,7 +36,7 @@ class PlayerSetUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val cards = listOf(
-            view.findViewById<CardView>(R.id.card_rexmax) to "rexmax",
+            view.findViewById<CardView>(R.id.card_rexmax) to "rexmaw",
             view.findViewById<CardView>(R.id.card_meko) to "meko",
             view.findViewById<CardView>(R.id.card_grumpjaw) to "grumpjaw",
             view.findViewById<CardView>(R.id.card_venomjunch) to "venomjunch"
@@ -61,7 +61,7 @@ class PlayerSetUpFragment : Fragment() {
         // Preselect the first card (optional)
         selectedCard = view.findViewById(R.id.card_rexmax)
         selectedCard.setCardBackgroundColor(Color.parseColor("#FFF176"))
-        selectedAvatar = "rexmax"
+        selectedAvatar = "rexmaw"
 
         // Handle Next button
         val nextButton = view.findViewById<Button>(R.id.next_button)

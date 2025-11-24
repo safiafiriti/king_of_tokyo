@@ -34,12 +34,6 @@ class GameViewModel : ViewModel() {
     private val _diceLocked = MutableLiveData<List<Boolean>>()
     val diceLocked: LiveData<List<Boolean>> = _diceLocked
 
-    init {
-        gameManager.initGame(listOf("Player 1", "Bot 1", "Bot 2", "Bot 3"))
-        gameManager.startTurn()
-        _rollsThisTurn.value = 0
-        refreshState()
-    }
 
     fun startNewGame(playerNames: List<String>) {
         gameManager.initGame(playerNames)
@@ -51,7 +45,7 @@ class GameViewModel : ViewModel() {
     fun startGameWithSelectedMonster(selectedMonster: String) {
         humanPlayerSelectedMonster = selectedMonster
         // Assign the human player to the selected monster
-        val monsters = listOf("Rexmaw", "Meko", "GrumpJaw", "VenomJunch")
+        val monsters = listOf("rexmaw", "meko", "grumpjaw", "venomjunch")
         val remainingMonsters = monsters - selectedMonster
         gameManager.initGame(listOf(selectedMonster) + remainingMonsters)
         gameManager.startTurn()

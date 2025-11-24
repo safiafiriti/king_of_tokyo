@@ -6,12 +6,14 @@ import com.example.kingoftokyo.game.viewmodel.GameViewModel
 import com.example.kingoftokyo.game.engine.GameManager
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.kingoftokyo.R
 import com.example.kingoftokyo.game.model.DiceSymbol
+import com.example.kingoftokyo.game.model.Player
 
 class GameFragment : Fragment(R.layout.fragment_game) {
 
@@ -21,6 +23,27 @@ class GameFragment : Fragment(R.layout.fragment_game) {
     private lateinit var rollButton: Button
     private lateinit var validateButton: Button
     private lateinit var diceViews: List<ImageView>
+
+    // REXMAW stats
+    private lateinit var rexHeart: TextView
+    private lateinit var rexStar: TextView
+    private lateinit var rexEnergy: TextView
+
+    // MEKO stats
+    private lateinit var mekoHeart: TextView
+    private lateinit var mekoStar: TextView
+    private lateinit var mekoEnergy: TextView
+
+    // GRUMPJAW stats
+    private lateinit var grumpHeart: TextView
+    private lateinit var grumpStar: TextView
+    private lateinit var grumpEnergy: TextView
+
+    // VENOMJUNCH stats
+    private lateinit var venomHeart: TextView
+    private lateinit var venomStar: TextView
+    private lateinit var venomEnergy: TextView
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,17 +60,26 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             view.findViewById(R.id.dice5),
             view.findViewById(R.id.dice6)
         )
+        // REXMAW
+        rexHeart = view.findViewById<LinearLayout>(R.id.rexmaw_heart).findViewById(R.id.stat_value)
+        rexStar = view.findViewById<LinearLayout>(R.id.rexmaw_star).findViewById(R.id.stat_value)
+        rexEnergy = view.findViewById<LinearLayout>(R.id.rexmaw_energy).findViewById(R.id.stat_value)
 
-        if (viewModel.players.value.isNullOrEmpty()) {
-            viewModel.startNewGame(
-                listOf(
-                    "You",
-                    "Bot 1",
-                    "Bot 2",
-                    "Bot 3"
-                )
-            )
-        }
+        // MEKO
+        mekoHeart = view.findViewById<LinearLayout>(R.id.meko_heart).findViewById(R.id.stat_value)
+        mekoStar = view.findViewById<LinearLayout>(R.id.meko_star).findViewById(R.id.stat_value)
+        mekoEnergy = view.findViewById<LinearLayout>(R.id.meko_energy).findViewById(R.id.stat_value)
+
+        // GRUMPJAW
+        grumpHeart = view.findViewById<LinearLayout>(R.id.grumpJaw_heart).findViewById(R.id.stat_value)
+        grumpStar = view.findViewById<LinearLayout>(R.id.grumpJaw_star).findViewById(R.id.stat_value)
+        grumpEnergy = view.findViewById<LinearLayout>(R.id.grumpJaw_energy).findViewById(R.id.stat_value)
+
+        // VENOMJUNCH
+        venomHeart = view.findViewById<LinearLayout>(R.id.venomJunch_heart).findViewById(R.id.stat_value)
+        venomStar = view.findViewById<LinearLayout>(R.id.venomJunch_star).findViewById(R.id.stat_value)
+        venomEnergy = view.findViewById<LinearLayout>(R.id.venomJunch_energy).findViewById(R.id.stat_value)
+
 
         rollButton.setOnClickListener {
             viewModel.onRollClicked()
@@ -125,6 +157,44 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                 ).show()
             }
         }
+        viewModel.players.observe(viewLifecycleOwner) { players ->
+            if (players.isNullOrEmpty()) return@observe
+
+            // Reset before updating (optional but clean)
+            updateStats(null, rexHeart, rexStar, rexEnergy)
+            updateStats(null, mekoHeart, mekoStar, mekoEnergy)
+            updateStats(null, grumpHeart, grumpStar, grumpEnergy)
+            updateStats(null, venomHeart, venomStar, venomEnergy)
+
+            players.forEach { player ->
+                when (player.name) {
+                    "rexmaw" -> updateStats(player, rexHeart, rexStar, rexEnergy)
+                    "meko" -> updateStats(player, mekoHeart, mekoStar, mekoEnergy)
+                    "grumpjaw" -> updateStats(player, grumpHeart, grumpStar, grumpEnergy)
+                    "venomjunch" -> updateStats(player, venomHeart, venomStar, venomEnergy)
+                }
+            }
+        }
+
+
+    }
+
+    private fun updateStats(
+        player: Player?,
+        heartView: TextView,
+        starView: TextView,
+        energyView: TextView
+    ) {
+        if (player == null) {
+            heartView.text = "-"
+            starView.text = "-"
+            energyView.text = "-"
+            return
+        }
+
+        heartView.text = player.health.toString()
+        starView.text = player.victoryPoints.toString()
+        energyView.text = player.energy.toString()
     }
 
     private fun symbolToDrawable(symbol: DiceSymbol): Int {
