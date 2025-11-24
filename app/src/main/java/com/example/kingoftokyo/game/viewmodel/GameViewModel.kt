@@ -35,6 +35,9 @@ class GameViewModel : ViewModel() {
     private val _diceLocked = MutableLiveData<List<Boolean>>()
     val diceLocked: LiveData<List<Boolean>> = _diceLocked
 
+    private val _tokyoLeavePlayerId = MutableLiveData<Int?>()
+    val tokyoLeavePlayerId: LiveData<Int?> = _tokyoLeavePlayerId
+
     // LiveData pour la boutique
     private val _marketCards = MutableLiveData<List<Card?>>()
     val marketCards: LiveData<List<Card?>> = _marketCards
@@ -57,39 +60,6 @@ class GameViewModel : ViewModel() {
         _marketCards.value = gameManager.marketCards.toList()
 
         refreshState()
-    }
-
-    fun onValidateClicked() {
-
-        // 0️⃣ Lock ALL the dice visually + logically
-        gameManager.lockAllDice()
-        refreshState()
-
-        // 1 On résout les dés (soins, dégâts, VP, gains d'énergie)
-        gameManager.resolveDice()
-        refreshState()
-
-        // 2 Si le jeu est fini on arrête tout
-        if (gameManager.gameEnded) {
-            _gameEnded.value = true
-            _winnerId.value = gameManager.winnerId
-            return
-        }
-
-        val player = gameManager.currentPlayer
-
-        // 3 LOGIQUE BOUTIQUE :
-        // CORRECTION ICI : On ouvre TOUJOURS la boutique si c'est un humain, même avec 0 énergie.
-        if (player.isHuman) {
-            _marketCards.value = gameManager.marketCards.toList()
-            _isBuyPhase.value = true // On active le mode achat
-
-            // Astuce : on reset à false avant de mettre à true pour forcer l'ouverture si jamais c'était bloqué
-            _showShopEvent.value = false
-            _showShopEvent.value = true
-        } else {
-            endTurnProperly()
-        }
     }
 
     // Action pour le bouton "Cards" (Regarder seulement)
@@ -150,6 +120,58 @@ class GameViewModel : ViewModel() {
 
     fun onToggleDice(index: Int) {
         gameManager.toggleLock(index)
+        refreshState()
+    }
+
+    fun onValidateClicked() {
+        // 0️⃣ Lock ALL the dice visually + logically
+        gameManager.lockAllDice()
+        refreshState()
+
+        gameManager.resolveDice()
+        refreshState()
+
+        val pendingId = gameManager.pendingTokyoLeavePlayerId
+        if (pendingId != null) {
+            _tokyoLeavePlayerId.value = pendingId
+            return
+        }
+
+        if (gameManager.gameEnded) {
+            _gameEnded.value = true
+            _winnerId.value = gameManager.winnerId
+            return
+        }
+        val player = gameManager.currentPlayer
+
+        // 3 LOGIQUE BOUTIQUE :
+        // CORRECTION ICI : On ouvre TOUJOURS la boutique si c'est un humain, même avec 0 énergie.
+        if (player.isHuman) {
+            _marketCards.value = gameManager.marketCards.toList()
+            _isBuyPhase.value = true // On active le mode achat
+
+            // Astuce : on reset à false avant de mettre à true pour forcer l'ouverture si jamais c'était bloqué
+            _showShopEvent.value = false
+            _showShopEvent.value = true
+        } else {
+            endTurnProperly()
+        }
+    }
+
+    fun onTokyoLeaveDecision(leave: Boolean) {
+        gameManager.resolveTokyoLeaveChoice(leave)
+        _tokyoLeavePlayerId.value = null
+
+        if (gameManager.gameEnded) {
+            _gameEnded.value = true
+            _winnerId.value = gameManager.winnerId
+            refreshState()
+            return
+        }
+
+        gameManager.endTurn()
+        gameManager.startTurn()
+        _rollsThisTurn.value = 0
         refreshState()
     }
 

@@ -45,6 +45,23 @@ class StayLeaveTokyoFragment : DialogFragment(R.layout.fragment_stay_leave_tokyo
             R.anim.popup_enter
         )
         popup.startAnimation(anim)
+
+        val stayBtn = view.findViewById<Button>(R.id.button_stay)
+        val leaveBtn = view.findViewById<Button>(R.id.button_leave)
+
+        stayBtn.setOnClickListener {
+            parentFragmentManager.setFragmentResult("tokyoDecision", Bundle().apply {
+                putBoolean("leave", false)
+            })
+            dismiss()
+        }
+
+        leaveBtn.setOnClickListener {
+            parentFragmentManager.setFragmentResult("tokyoDecision", Bundle().apply {
+                putBoolean("leave", true)
+            })
+            dismiss()
+        }
     }
 
 }

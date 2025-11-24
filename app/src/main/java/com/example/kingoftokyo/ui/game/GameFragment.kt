@@ -3,7 +3,10 @@ package com.example.kingoftokyo.ui.game
 import android.os.Bundle
 import android.view.View
 import com.example.kingoftokyo.game.viewmodel.GameViewModel
+import com.example.kingoftokyo.game.engine.GameManager
 import com.example.kingoftokyo.game.model.Location
+import androidx.fragment.app.setFragmentResultListener
+import com.example.kingoftokyo.ui.stayTokyo.StayLeaveTokyoFragment
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -83,6 +86,13 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         venomStar = view.findViewById<LinearLayout>(R.id.venomJunch_star).findViewById(R.id.stat_value)
         venomEnergy = view.findViewById<LinearLayout>(R.id.venomJunch_energy).findViewById(R.id.stat_value)
 
+        parentFragmentManager.setFragmentResultListener(
+            "tokyoDecision",
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val leave = bundle.getBoolean("leave")
+            viewModel.onTokyoLeaveDecision(leave)
+        }
 
         rollButton.setOnClickListener { viewModel.onRollClicked() }
         validateButton.setOnClickListener { viewModel.onValidateClicked() }
@@ -199,6 +209,14 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                 }
             }
         }
+
+        viewModel.tokyoLeavePlayerId.observe(viewLifecycleOwner) { pendingId ->
+            if (pendingId != null) {
+                // Ouvrir popup Stay/Leave
+                val dialog = StayLeaveTokyoFragment()
+                dialog.show(parentFragmentManager, "StayLeaveTokyoDialog")
+            }
+        }
     }
 
     private fun updateStats(
@@ -234,4 +252,5 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         val badge = view?.findViewById<TextView>(viewId) ?: return
         badge.visibility = if (isInTokyo) View.VISIBLE else View.GONE
     }
+
 }

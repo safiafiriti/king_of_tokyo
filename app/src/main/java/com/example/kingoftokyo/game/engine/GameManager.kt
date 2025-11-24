@@ -23,6 +23,9 @@ class GameManager {
     var winnerId: Int? = null
         private set
 
+    var pendingTokyoLeavePlayerId: Int? = null
+        private set
+
     private var rollsThisTurn: Int = 0
     private val maxRollsPerTurn = 3
 
@@ -208,6 +211,11 @@ class GameManager {
         val tokyoOccupied = players.any { it.location == Location.TOKYO && it.alive }
 
         if (!tokyoOccupied) {
+            players.filter { it.alive && it.id != attacker.id }
+                .forEach { target ->
+                    target.takeDamage(damage)
+                    // ici il n'y a personne dans Tokyo donc pas de popup
+                }
             attacker.enterTokyo()
             return
         }
@@ -221,6 +229,15 @@ class GameManager {
 
             if (shouldHit) {
                 target.takeDamage(damage)
+
+                // Si un joueur DANS Tokyo se fait taper
+                if (target.location == Location.TOKYO && target.alive) {
+
+                    // Si c’est un humain : demander popup
+                    if (target.isHuman) {
+                        pendingTokyoLeavePlayerId = target.id
+                    }
+                }
             }
         }
     }
@@ -262,4 +279,17 @@ class GameManager {
             }
         }
     }
+
+    fun resolveTokyoLeaveChoice(leave: Boolean) {
+        val playerId = pendingTokyoLeavePlayerId ?: return
+        val tokyoPlayer = players.firstOrNull { it.id == playerId && it.location == Location.TOKYO }
+
+        if (leave && tokyoPlayer != null) {
+            tokyoPlayer.leaveTokyo()
+            currentPlayer.enterTokyo()
+        }
+
+        pendingTokyoLeavePlayerId = null
+    }
+
 }
