@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.example.kingoftokyo.game.viewmodel.GameViewModel
 import com.example.kingoftokyo.game.engine.GameManager
+import com.example.kingoftokyo.game.model.Location
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -157,6 +158,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                 ).show()
             }
         }
+
         viewModel.players.observe(viewLifecycleOwner) { players ->
             if (players.isNullOrEmpty()) return@observe
 
@@ -172,6 +174,30 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                     "meko" -> updateStats(player, mekoHeart, mekoStar, mekoEnergy)
                     "grumpjaw" -> updateStats(player, grumpHeart, grumpStar, grumpEnergy)
                     "venomjunch" -> updateStats(player, venomHeart, venomStar, venomEnergy)
+                }
+            }
+        }
+
+        viewModel.players.observe(viewLifecycleOwner) { players ->
+
+            players.forEach { player ->
+                when (player.name.lowercase()) {
+                    "rexmaw" -> toggleTokyoBadge(
+                        player.location == Location.TOKYO,
+                        R.id.rexmaw_tokyo
+                    )
+                    "meko" -> toggleTokyoBadge(
+                        player.location == Location.TOKYO,
+                        R.id.meko_tokyo
+                    )
+                    "grumpjaw" -> toggleTokyoBadge(
+                        player.location == Location.TOKYO,
+                        R.id.grumJaw_tokyo
+                    )
+                    "venomjunch" -> toggleTokyoBadge(
+                        player.location == Location.TOKYO,
+                        R.id.venomJunch_tokyo
+                    )
                 }
             }
         }
@@ -207,4 +233,10 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             DiceSymbol.THREE  -> R.drawable.dice_three
         }
     }
+
+    private fun toggleTokyoBadge(isInTokyo: Boolean, viewId: Int) {
+        val badge = view?.findViewById<TextView>(viewId) ?: return
+        badge.visibility = if (isInTokyo) View.VISIBLE else View.GONE
+    }
+
 }
