@@ -7,6 +7,7 @@ import com.example.kingoftokyo.game.engine.GameManager
 import com.example.kingoftokyo.game.model.Location
 import androidx.fragment.app.setFragmentResultListener
 import com.example.kingoftokyo.ui.stayTokyo.StayLeaveTokyoFragment
+import androidx.navigation.fragment.findNavController
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -155,7 +156,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         }
 
         viewModel.roundNumber.observe(viewLifecycleOwner) { round ->
-            roundTitle.text = "Round $round"
+            roundTitle.text = "Round N°$round"
         }
 
         viewModel.diceLocked.observe(viewLifecycleOwner) { lockedList ->
@@ -189,18 +190,20 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                 rollButton.isEnabled = false
                 validateButton.isEnabled = false
 
+                val players = viewModel.players.value.orEmpty()
                 val winnerId = viewModel.winnerId.value
-                val winnerName = viewModel.players.value
-                    ?.firstOrNull { it.id == winnerId }
-                    ?.name ?: "Unknown"
+                val humanPlayer = players.firstOrNull { it.isHuman }
 
-                Toast.makeText(
-                    requireContext(),
-                    "Game over! Winner: $winnerName",
-                    Toast.LENGTH_LONG
-                ).show()
+                if (winnerId != null && humanPlayer != null) {
+                    if (winnerId == humanPlayer.id) {
+                        findNavController().navigate(R.id.action_gameFragment_to_wonGameFragment)
+                    } else {
+                        findNavController().navigate(R.id.action_gameFragment_to_lostGameFragment)
+                    }
+                }
             }
         }
+
 
         viewModel.players.observe(viewLifecycleOwner) { players ->
             if (players.isNullOrEmpty()) return@observe

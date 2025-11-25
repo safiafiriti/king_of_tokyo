@@ -275,11 +275,17 @@ class GameManager {
     private fun checkEndOfGame() {
         val alivePlayers = players.filter { it.alive }
         val winnerByVP = players.firstOrNull { it.victoryPoints >= 20 }
+        val human = players.firstOrNull { it.isHuman }
 
         when {
             winnerByVP != null -> {
                 gameEnded = true
                 winnerId = winnerByVP.id
+            }
+            human != null && !human.alive -> {
+                gameEnded = true
+                // on peut mettre comme "winner" n'importe quel bot encore vivant
+                winnerId = alivePlayers.firstOrNull { it.id != human.id }?.id
             }
             alivePlayers.size == 1 -> {
                 gameEnded = true
