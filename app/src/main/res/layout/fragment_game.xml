@@ -67,6 +67,7 @@
 
         <!-- TOP LEFT: REXMAW -->
         <FrameLayout
+            android:id="@+id/rexmaw_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -121,6 +122,7 @@
 
         <!-- TOP RIGHT: MEKO -->
         <FrameLayout
+            android:id="@+id/meko_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -174,6 +176,7 @@
 
         <!-- BOTTOM LEFT: GRUMPJAW -->
         <FrameLayout
+            android:id="@+id/grumpjaw_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -228,6 +231,7 @@
 
         <!-- BOTTOM RIGHT: VENOMJUNCH -->
         <FrameLayout
+            android:id="@+id/venomjunch_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"

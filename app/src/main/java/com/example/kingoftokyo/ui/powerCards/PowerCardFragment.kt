@@ -105,7 +105,7 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
                     if (currentEnergy >= card.cost) {
                         onCardClicked(index)
                     } else {
-                        Toast.makeText(context, "Pas assez d'énergie !", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Not enough energy!", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

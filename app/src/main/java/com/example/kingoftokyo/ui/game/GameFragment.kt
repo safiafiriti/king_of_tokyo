@@ -49,11 +49,21 @@ class GameFragment : Fragment(R.layout.fragment_game) {
     private lateinit var venomStar: TextView
     private lateinit var venomEnergy: TextView
 
+    private lateinit var rexContainer: View
+    private lateinit var mekoContainer: View
+    private lateinit var grumpjawContainer: View
+    private lateinit var venomContainer: View
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         roundTitle = view.findViewById(R.id.round_title_text)
+        rexContainer = view.findViewById(R.id.rexmaw_container)
+        mekoContainer = view.findViewById(R.id.meko_container)
+        grumpjawContainer = view.findViewById(R.id.grumpjaw_container)
+        venomContainer = view.findViewById(R.id.venomjunch_container)
+
         rollButton = view.findViewById(R.id.rollButton)
         validateButton = view.findViewById(R.id.validateButton)
         shopButton = view.findViewById(R.id.shop_button) // Bind
@@ -150,6 +160,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             val players = viewModel.players.value
             val name = players?.getOrNull(index)?.name ?: "Player ${index + 1}"
             roundTitle.text = "Turn: $name"
+            highlightCurrentPlayer(players, index)
         }
 
         viewModel.rollsThisTurn.observe(viewLifecycleOwner) { rolls ->
@@ -255,5 +266,28 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         val badge = view?.findViewById<TextView>(viewId) ?: return
         badge.visibility = if (isInTokyo) View.VISIBLE else View.GONE
     }
+
+    private fun highlightCurrentPlayer(players: List<Player>?, currentIndex: Int) {
+        if (players == null || players.isEmpty()) return
+
+        // Tout le monde grisé au départ
+        val allContainers = listOf(
+            "rexmaw" to rexContainer,
+            "meko" to mekoContainer,
+            "grumpjaw" to grumpjawContainer,
+            "venomjunch" to venomContainer
+        )
+
+        allContainers.forEach { (_, container) ->
+            container.alpha = 0.3f
+        }
+
+        // On remet en normal seulement le joueur courant
+        val currentPlayer = players.getOrNull(currentIndex) ?: return
+        val currentName = currentPlayer.name.lowercase()
+
+        allContainers.firstOrNull { it.first == currentName }?.second?.alpha = 1f
+    }
+
 
 }
