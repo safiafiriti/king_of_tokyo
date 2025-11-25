@@ -40,9 +40,9 @@
         android:layout_height="40dp"
         android:layout_marginEnd="8dp"
         android:backgroundTint="#009688"
-        android:text="My Cards"
+        android:text="@string/cards"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/top_bar"
         app:layout_constraintEnd_toStartOf="@+id/shop_button"
         app:layout_constraintTop_toTopOf="@+id/top_bar" />
@@ -51,7 +51,7 @@
     <Button
         android:id="@+id/shop_button"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#673AB7"
         android:text="Shop"
@@ -81,6 +81,7 @@
 
         <!-- TOP LEFT: REXMAW -->
         <FrameLayout
+            android:id="@+id/rexmaw_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -98,12 +99,13 @@
                 android:id="@+id/rexmaw_tokyo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="荘"
+                android:text="🗼"
                 android:textSize="30sp"
                 android:visibility="gone"
                 android:layout_gravity="top|start"
                 android:padding="4dp"/>
 
+            <!-- Heart, Star, Energy column -->
             <LinearLayout
                 android:layout_width="42dp"
                 android:layout_height="88dp"
@@ -112,6 +114,7 @@
                 android:layout_marginEnd="12dp"
                 android:orientation="vertical">
 
+                <!-- Top section (Heart + Star) -->
                 <include
                     android:id="@+id/rexmaw_heart"
                     layout="@layout/view_stat_box_heart" />
@@ -119,17 +122,21 @@
                 <include
                     android:id="@+id/rexmaw_star"
                     layout="@layout/view_stat_box_star" />
+                <!-- Spacer pushes energy down -->
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="8dp" />
+                <!-- Bottom stat -->
                 <include
                     android:id="@+id/rexmaw_energy"
                     layout="@layout/view_stat_box_energy" />
             </LinearLayout>
+
         </FrameLayout>
 
         <!-- TOP RIGHT: MEKO -->
         <FrameLayout
+            android:id="@+id/meko_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -147,12 +154,13 @@
                 android:id="@+id/meko_tokyo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="荘"
+                android:text="🗼"
                 android:textSize="30sp"
                 android:visibility="gone"
                 android:layout_gravity="top|start"
                 android:padding="4dp"/>
 
+            <!-- Heart, Star, Energy column -->
             <LinearLayout
                 android:layout_width="42dp"
                 android:layout_height="88dp"
@@ -161,6 +169,7 @@
                 android:layout_marginEnd="12dp"
                 android:orientation="vertical">
 
+                <!-- Top section (Heart + Star) -->
                 <include
                     android:id="@+id/meko_heart"
                     layout="@layout/view_stat_box_heart" />
@@ -168,9 +177,11 @@
                 <include
                     android:id="@+id/meko_star"
                     layout="@layout/view_stat_box_star" />
+                <!-- Spacer pushes energy down -->
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="8dp" />
+                <!-- Bottom stat -->
                 <include
                     android:id="@+id/meko_energy"
                     layout="@layout/view_stat_box_energy" />
@@ -179,6 +190,7 @@
 
         <!-- BOTTOM LEFT: GRUMPJAW -->
         <FrameLayout
+            android:id="@+id/grumpjaw_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -197,12 +209,13 @@
                 android:id="@+id/grumJaw_tokyo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="荘"
+                android:text="🗼"
                 android:textSize="30sp"
                 android:visibility="gone"
                 android:layout_gravity="top|start"
                 android:padding="4dp"/>
 
+            <!-- Heart, Star, Energy column -->
             <LinearLayout
                 android:layout_width="42dp"
                 android:layout_height="88dp"
@@ -211,6 +224,7 @@
                 android:layout_marginEnd="12dp"
                 android:orientation="vertical">
 
+                <!-- Top section (Heart + Star) -->
                 <include
                     android:id="@+id/grumpJaw_heart"
                     layout="@layout/view_stat_box_heart" />
@@ -218,9 +232,11 @@
                 <include
                     android:id="@+id/grumpJaw_star"
                     layout="@layout/view_stat_box_star" />
+                <!-- Spacer pushes energy down -->
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="8dp" />
+                <!-- Bottom stat -->
                 <include
                     android:id="@+id/grumpJaw_energy"
                     layout="@layout/view_stat_box_energy" />
@@ -229,6 +245,7 @@
 
         <!-- BOTTOM RIGHT: VENOMJUNCH -->
         <FrameLayout
+            android:id="@+id/venomjunch_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_rowWeight="1"
@@ -247,12 +264,13 @@
                 android:id="@+id/venomJunch_tokyo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="荘"
+                android:text="🗼"
                 android:textSize="30sp"
                 android:visibility="gone"
                 android:layout_gravity="top|start"
                 android:padding="4dp"/>
 
+            <!-- Heart, Star, Energy column -->
             <LinearLayout
                 android:layout_width="42dp"
                 android:layout_height="88dp"
@@ -261,6 +279,7 @@
                 android:layout_marginEnd="12dp"
                 android:orientation="vertical">
 
+                <!-- Top section (Heart + Star) -->
                 <include
                     android:id="@+id/venomJunch_heart"
                     layout="@layout/view_stat_box_heart" />
@@ -268,9 +287,11 @@
                 <include
                     android:id="@+id/venomJunch_star"
                     layout="@layout/view_stat_box_star" />
+                <!-- Spacer pushes energy down -->
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="8dp" />
+                <!-- Bottom stat -->
                 <include
                     android:id="@+id/venomJunch_energy"
                     layout="@layout/view_stat_box_energy" />

@@ -27,6 +27,12 @@ class GameManager {
     var winnerId: Int? = null
         private set
 
+    var roundNumber: Int = 1
+        private set
+
+    var pendingTokyoLeavePlayerId: Int? = null
+        private set
+
     private var rollsThisTurn: Int = 0
 
     // Nombre max de lancers (dynamique selon les cartes)
@@ -45,6 +51,7 @@ class GameManager {
 
     fun initGame(playerNames: List<String>) {
         players.clear()
+        roundNumber = 1
         playerNames.forEachIndexed { index, name ->
             players += Player(
                 id = index,
@@ -59,10 +66,6 @@ class GameManager {
             )
         }
 
-        // Initialiser le deck et la boutique
-        initDeck()
-        refillMarket()
-
         currentPlayerIndex = 0
         gameEnded = false
         winnerId = null
@@ -73,8 +76,13 @@ class GameManager {
             it.unlock()
             it.roll()
         }
+
+        // Initialiser la pioche et la boutique
+        initDeck()
+        refillMarket()
     }
 
+    // Fonction qui initialise la pioche
     private fun initDeck() {
         deck.clear()
 
@@ -151,6 +159,7 @@ class GameManager {
                 // Cartes ACTION ici si besoin
             }
 
+            // Retirer de la boutique et remplacer
             marketCards[marketIndex] = null
             refillMarket()
             return true
@@ -211,6 +220,10 @@ class GameManager {
         if (gameEnded) return
         if (rollsThisTurn >= maxRollsPerTurn) return
 
+        if (rollsThisTurn == 0) {
+            dice.forEach { it.unlock() }
+        }
+
         dice.forEach { it.roll() }
         rollsThisTurn++
     }
@@ -256,7 +269,7 @@ class GameManager {
                 DiceSymbol.CLAW   -> claws++
                 DiceSymbol.HEART  -> hearts++
                 DiceSymbol.ENERGY -> energy++
-                else -> { }
+                else -> { /* ONE/TWO/THREE déjà comptés */ }
             }
         }
 
@@ -311,6 +324,11 @@ class GameManager {
         val tokyoOccupied = players.any { it.location == Location.TOKYO && it.alive }
 
         if (!tokyoOccupied) {
+            players.filter { it.alive && it.id != attacker.id }
+                .forEach { target ->
+                    target.takeDamage(damage)
+                    // ici il n'y a personne dans Tokyo donc pas de popup
+                }
             attacker.enterTokyo()
             return
         }
@@ -322,9 +340,19 @@ class GameManager {
                     (!attackerInTokyo && targetInTokyo)
 
             if (shouldHit) {
-                // Application des dégâts sur la cible
-                takeDamageLogic(target, damage, attacker)
+                //target.takeDamage(damage)
 
+                // Application des dégâts sur la cible
+               takeDamageLogic(target, damage, attacker)
+
+                // Si un joueur DANS Tokyo se fait taper
+                if (target.location == Location.TOKYO && target.alive) {
+
+                    // Si c’est un humain : demander popup
+                    if (target.isHuman) {
+                        pendingTokyoLeavePlayerId = target.id
+                    }
+                }
                 // CARTE: Venom Spit (Empoisonne la cible)
                 if (hasVenom) {
                     poisonedPlayers.add(target.id)
@@ -380,6 +408,7 @@ class GameManager {
     private fun victoryFromNumbers(number: Int, count: Int): Int {
         if (count < 3) return 0
         val extra = count - 3
+        // 3x1 → 1 point ; 3x2 → 2 points ; 3x3 → 3 points + extras
         return number + extra
     }
 
@@ -394,6 +423,10 @@ class GameManager {
             safety++
         } while (!players[nextIndex].alive && safety <= players.size)
 
+        if (nextIndex == 0) {
+            roundNumber++
+        }
+
         currentPlayerIndex = nextIndex
         rollsThisTurn = 0
     }
@@ -401,11 +434,17 @@ class GameManager {
     private fun checkEndOfGame() {
         val alivePlayers = players.filter { it.alive }
         val winnerByVP = players.firstOrNull { it.victoryPoints >= 20 }
+        val human = players.firstOrNull { it.isHuman }
 
         when {
             winnerByVP != null -> {
                 gameEnded = true
                 winnerId = winnerByVP.id
+            }
+            human != null && !human.alive -> {
+                gameEnded = true
+                // on peut mettre comme "winner" n'importe quel bot encore vivant
+                winnerId = alivePlayers.firstOrNull { it.id != human.id }?.id
             }
             alivePlayers.size == 1 -> {
                 gameEnded = true
@@ -413,4 +452,17 @@ class GameManager {
             }
         }
     }
+
+    fun resolveTokyoLeaveChoice(leave: Boolean) {
+        val playerId = pendingTokyoLeavePlayerId ?: return
+        val tokyoPlayer = players.firstOrNull { it.id == playerId && it.location == Location.TOKYO }
+
+        if (leave && tokyoPlayer != null) {
+            tokyoPlayer.leaveTokyo()
+            currentPlayer.enterTokyo()
+        }
+
+        pendingTokyoLeavePlayerId = null
+    }
+
 }

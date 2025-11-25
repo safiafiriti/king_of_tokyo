@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.activityViewModels // Important pour partager les données
 import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
 import com.example.kingoftokyo.game.model.Card
@@ -18,7 +18,7 @@ import com.example.kingoftokyo.game.viewmodel.GameViewModel
 
 class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
 
-    // On récupère le ViewModel partagé
+    // On récupère le ViewModel partagé avec l'activité (le même que celui du GameFragment)
     private val viewModel: GameViewModel by activityViewModels()
 
     // --- DECLARATION DES VARIABLES ---
@@ -29,26 +29,35 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
 
     override fun onStart() {
         super.onStart()
-        // Rend le fond de la fenêtre transparent
+        // Rend le fond de la fenêtre transparent pour voir le jeu derrière
         dialog?.window?.apply {
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_power_card, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Empêcher la fermeture par retour arrière pour forcer l'usage des boutons
+        // EMPECHER LA FERMETURE PAR RETOUR ARRIERE (force l'usage des boutons)
         isCancelable = false
 
         // Animation d'entrée
         val popup = view.findViewById<View>(R.id.popup_container)
-        val anim = android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.popup_enter)
+        val anim = android.view.animation.AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.popup_enter
+        )
         popup.startAnimation(anim)
 
         // --- RECUPERATION DES VUES (CORRECTION ICI) ---
@@ -66,28 +75,31 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
         // Gestion de l'affichage selon la phase (Achat ou Consultation)
         viewModel.isBuyPhase.observe(viewLifecycleOwner) { isBuyPhase ->
             if (isBuyPhase) {
+                // Phase d'achat (Fin de tour)
                 buyButton.visibility = View.VISIBLE
                 cancelButton.text = getString(R.string.cancel)
             } else {
+                // Phase de consultation (Pendant le tour)
                 buyButton.visibility = View.INVISIBLE
-                cancelButton.text = "Fermer"
+                cancelButton.text = "Close"
             }
             // Reset sélection quand on change de mode
             selectedIndex = null
             updateSelectionVisuals()
         }
 
-        // Observer les cartes disponibles pour les afficher
+        // --- OBSERVER LES CARTES DISPONIBLES ---
+        // Dès que la liste des cartes change dans le ViewModel, on met à jour les images ici
         viewModel.marketCards.observe(viewLifecycleOwner) { cards ->
             updateCardsImages(cards)
         }
 
-        // Clic sur une carte
+        // Gestion du clic sur une carte (Sélection visuelle)
         cardViews.forEachIndexed { index, imageView ->
             imageView.setOnClickListener {
                 val isBuyPhase = viewModel.isBuyPhase.value == true
 
-                // Si on n'est pas en phase d'achat, on ne fait rien
+                // Si on n'est pas en phase d'achat, on ne sélectionne pas
                 if (!isBuyPhase) return@setOnClickListener
 
                 val cards = viewModel.marketCards.value
@@ -98,7 +110,7 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
                     if (currentEnergy >= card.cost) {
                         onCardClicked(index)
                     } else {
-                        Toast.makeText(context, "Pas assez d'énergie (${card.cost} requis)", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Not enough energy! (${card.cost} required)", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -107,6 +119,7 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
         // Bouton Acheter
         buyButton.setOnClickListener {
             selectedIndex?.let { index ->
+                // On tente d'acheter la carte sélectionnée via le ViewModel
                 viewModel.onBuyCard(index)
 
                 val energyLeft = viewModel.getCurrentPlayerEnergy()
@@ -134,7 +147,7 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
             if (card != null) {
                 imageView.setImageResource(card.imageResId)
                 imageView.visibility = View.VISIBLE
-                imageView.alpha = 1.0f
+                imageView.alpha = 1.0f // Toujours visible
             } else {
                 imageView.visibility = View.INVISIBLE
             }
