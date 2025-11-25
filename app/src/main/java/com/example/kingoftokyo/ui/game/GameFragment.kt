@@ -154,6 +154,10 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             }
         }
 
+        viewModel.roundNumber.observe(viewLifecycleOwner) { round ->
+            roundTitle.text = "Round $round"
+        }
+
         viewModel.diceLocked.observe(viewLifecycleOwner) { lockedList ->
             val rolls = viewModel.rollsThisTurn.value ?: 0
             updateDiceState(rolls, lockedList)
@@ -162,7 +166,6 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         viewModel.currentPlayerIndex.observe(viewLifecycleOwner) { index ->
             val players = viewModel.players.value
             val name = players?.getOrNull(index)?.name ?: "Player ${index + 1}"
-            roundTitle.text = "Turn: $name"
             highlightCurrentPlayer(players, index)
         }
 

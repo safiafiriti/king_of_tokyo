@@ -50,6 +50,9 @@ class GameViewModel : ViewModel() {
     private val _isBuyPhase = MutableLiveData<Boolean>(false)
     val isBuyPhase: LiveData<Boolean> = _isBuyPhase
 
+    private val _roundNumber = MutableLiveData<Int>()
+    val roundNumber: LiveData<Int> = _roundNumber
+
 
     fun startNewGame(playerNames: List<String>) {
         gameManager.initGame(playerNames)
@@ -177,6 +180,7 @@ class GameViewModel : ViewModel() {
 
     private fun refreshState() {
         _players.value = gameManager.players.toList()
+        _roundNumber.value = gameManager.roundNumber
         _dice.value = gameManager.dice.map { it.symbol }
         _diceLocked.value = gameManager.dice.map { it.locked }
         _currentPlayerIndex.value = gameManager.currentPlayerIndex

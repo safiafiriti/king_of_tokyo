@@ -23,6 +23,9 @@ class GameManager {
     var winnerId: Int? = null
         private set
 
+    var roundNumber: Int = 1
+        private set
+
     var pendingTokyoLeavePlayerId: Int? = null
         private set
 
@@ -35,6 +38,7 @@ class GameManager {
 
     fun initGame(playerNames: List<String>) {
         players.clear()
+        roundNumber = 1
         playerNames.forEachIndexed { index, name ->
             players += Player(
                 id = index,
@@ -259,6 +263,10 @@ class GameManager {
             nextIndex = (nextIndex + 1) % players.size
             safety++
         } while (!players[nextIndex].alive && safety <= players.size)
+
+        if (nextIndex == 0) {
+            roundNumber++
+        }
 
         currentPlayerIndex = nextIndex
         rollsThisTurn = 0
