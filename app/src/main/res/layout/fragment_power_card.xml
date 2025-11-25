@@ -17,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Titre (Optionnel, je le garde pour la clarté mais tu peux le retirer si tu veux vraiment puriste image) -->
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
@@ -30,21 +31,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- CARTES VERTICALES -->
         <LinearLayout
             android:id="@+id/cards_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_text">
 
             <ImageView
                 android:id="@+id/card_image_1"
-                android:layout_width="100dp"
-                android:layout_height="140dp"
-                android:layout_marginEnd="12dp"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:adjustViewBounds="true"
                 android:background="#00000000"
                 android:contentDescription="Card 1"
@@ -53,9 +56,9 @@
 
             <ImageView
                 android:id="@+id/card_image_2"
-                android:layout_width="100dp"
-                android:layout_height="140dp"
-                android:layout_marginEnd="12dp"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:adjustViewBounds="true"
                 android:background="#00000000"
                 android:contentDescription="Card 2"
@@ -64,8 +67,9 @@
 
             <ImageView
                 android:id="@+id/card_image_3"
-                android:layout_width="100dp"
-                android:layout_height="140dp"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:adjustViewBounds="true"
                 android:background="#00000000"
                 android:contentDescription="Card 3"
@@ -73,10 +77,12 @@
                 android:src="@drawable/ic_launcher_foreground" />
         </LinearLayout>
 
+        <!-- BOUTONS -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,20 +90,22 @@
 
             <Button
                 android:id="@+id/button_cancel"
-                android:layout_width="wrap_content"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:backgroundTint="#D32F2F"
+                android:layout_marginEnd="24dp"
+                android:backgroundTint="#E7C301"
                 android:text="@string/cancel"
-                android:textColor="#FFFFFF" />
+                android:textColor="#000000"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/button_buy"
-                android:layout_width="wrap_content"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#388E3C"
+                android:backgroundTint="#3AC769"
                 android:text="@string/buy"
-                android:textColor="#FFFFFF" />
+                android:textColor="#000000"
+                android:textStyle="bold"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
