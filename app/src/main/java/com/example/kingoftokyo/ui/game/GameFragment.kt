@@ -79,6 +79,12 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             view.findViewById(R.id.dice5),
             view.findViewById(R.id.dice6)
         )
+
+        diceViews.forEach { die ->
+            die.alpha = 0.3f
+            die.isEnabled = false
+        }
+
         // REXMAW
         rexHeart = view.findViewById<LinearLayout>(R.id.rexmaw_heart).findViewById(R.id.stat_value)
         rexStar = view.findViewById<LinearLayout>(R.id.rexmaw_star).findViewById(R.id.stat_value)
@@ -149,11 +155,8 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         }
 
         viewModel.diceLocked.observe(viewLifecycleOwner) { lockedList ->
-            lockedList.forEachIndexed { index, locked ->
-                if (index < diceViews.size) {
-                    diceViews[index].alpha = if (locked) 0.5f else 1f
-                }
-            }
+            val rolls = viewModel.rollsThisTurn.value ?: 0
+            updateDiceState(rolls, lockedList)
         }
 
         viewModel.currentPlayerIndex.observe(viewLifecycleOwner) { index ->
@@ -173,6 +176,9 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             val canValidate = rolls > 0 && viewModel.gameEnded.value != true
             validateButton.isEnabled = canValidate
             validateButton.alpha = if (canValidate) 1f else 0.5f
+
+            val locked = viewModel.diceLocked.value
+                    updateDiceState(rolls, locked)
         }
 
         viewModel.gameEnded.observe(viewLifecycleOwner) { ended ->
@@ -288,6 +294,26 @@ class GameFragment : Fragment(R.layout.fragment_game) {
 
         allContainers.firstOrNull { it.first == currentName }?.second?.alpha = 1f
     }
+
+    private fun updateDiceState(rolls: Int, locked: List<Boolean>?) {
+        if (!::diceViews.isInitialized) return
+
+        if (rolls == 0) {
+            // Avant d’avoir lancé → dés gris et non cliquables
+            diceViews.forEach { die ->
+                die.alpha = 0.3f
+                die.isEnabled = false
+            }
+        } else {
+            // Après au moins un lancer → dés actifs
+            diceViews.forEachIndexed { index, die ->
+                val isLocked = locked?.getOrNull(index) == true
+                die.alpha = if (isLocked) 0.5f else 1f
+                die.isEnabled = true
+            }
+        }
+    }
+
 
 
 }
