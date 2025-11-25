@@ -91,9 +91,9 @@ class GameManager {
         deck.clear()
 
         // --- CARTES ACTION (Effets immédiats non implémentés ici) ---
-        deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
-        deck.add(Card(20, "Heal", 3, CardType.ACTION, "Heal 2 damage", R.drawable.heart_reactor_card)) // Placeholder
-        deck.add(Card(21, "Tail Slam", 3, CardType.ACTION, "Deal 1 extra damage", R.drawable.tail_slam_card))
+        //deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
+        //deck.add(Card(20, "Heal", 3, CardType.ACTION, "Heal 2 damage", R.drawable.heart_reactor_card)) // Placeholder
+        //deck.add(Card(21, "Tail Slam", 3, CardType.ACTION, "Deal 1 extra damage", R.drawable.tail_slam_card))
 
         // --- CARTES POWER (PERMANENTES) - TOUTES IMPLÉMENTÉES ---
 
@@ -121,8 +121,6 @@ class GameManager {
 
         // UTILITAIRE
         deck.add(Card(16, "Super Reroll", 4, CardType.POWER, "+1 Reroll", R.drawable.super_reroll_card))
-        deck.add(Card(17, "Power Focus", 4, CardType.POWER, "Cards cost -1", R.drawable.power_focus_card))
-
         deck.shuffle()
     }
 
