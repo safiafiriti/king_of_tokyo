@@ -33,16 +33,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1" />
 
-    <!-- BOUTON CARDS (SHOP) -->
+    <!-- BOUTON MES CARTES (NOUVEAU) -->
+    <Button
+        android:id="@+id/my_cards_button"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="#009688"
+        android:text="My Cards"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/top_bar"
+        app:layout_constraintEnd_toStartOf="@+id/shop_button"
+        app:layout_constraintTop_toTopOf="@+id/top_bar" />
+
+    <!-- BOUTON SHOP (EXISTANT) -->
     <Button
         android:id="@+id/shop_button"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#673AB7"
-        android:text="Cards"
+        android:text="Shop"
         android:textColor="#FFFFFF"
-        android:textSize="12sp"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/top_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_bar" />

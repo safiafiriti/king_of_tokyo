@@ -152,7 +152,6 @@ class GameViewModel : ViewModel() {
         gameManager.toggleLock(index)
         refreshState()
     }
-
     private fun refreshState() {
         _players.value = gameManager.players.toList()
         _dice.value = gameManager.dice.map { it.symbol }

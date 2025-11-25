@@ -234,6 +234,9 @@ class GameManager {
         dice[index].toggleLock()
     }
 
+    fun lockAllDice() {
+        dice.forEach { it.lock() }
+    }
 
     fun resolveDice() {
         if (gameEnded) return
