@@ -77,7 +77,7 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
             } else {
                 // Phase de consultation (Pendant le tour)
                 buyButton.visibility = View.INVISIBLE
-                cancelButton.text = "Fermer"
+                cancelButton.text = "Close"
             }
             selectedIndex = null
             updateSelectionVisuals()
