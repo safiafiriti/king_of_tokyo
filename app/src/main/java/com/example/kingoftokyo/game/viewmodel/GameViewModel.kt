@@ -12,6 +12,9 @@ class GameViewModel : ViewModel() {
 
     private val gameManager = GameManager()
 
+    private val _humanHitDamage = MutableLiveData<Int?>()
+    val humanHitDamage: LiveData<Int?> = _humanHitDamage
+
     private val _players = MutableLiveData<List<Player>>()
     val players: LiveData<List<Player>> = _players
 
@@ -181,6 +184,7 @@ class GameViewModel : ViewModel() {
     private fun refreshState() {
         _players.value = gameManager.players.toList()
         _roundNumber.value = gameManager.roundNumber
+        _humanHitDamage.value = gameManager.humanHitDamageThisTurn
         _dice.value = gameManager.dice.map { it.symbol }
         _diceLocked.value = gameManager.dice.map { it.locked }
         _currentPlayerIndex.value = gameManager.currentPlayerIndex
@@ -193,4 +197,10 @@ class GameViewModel : ViewModel() {
         val index = _currentPlayerIndex.value ?: 0
         return _players.value?.getOrNull(index)?.energy ?: 0
     }
+
+    fun consumeHumanHitDamage() {
+        gameManager.clearHumanHitDamage()
+        _humanHitDamage.value = null
+    }
+
 }

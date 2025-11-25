@@ -11,6 +11,7 @@ import com.example.kingoftokyo.game.model.Player
 class GameManager {
 
     val players: MutableList<Player> = mutableListOf()
+
     val dice: MutableList<GameDie> =
         MutableList(6) { GameDie(DiceSymbol.values().random(), locked = false) }
 
@@ -19,6 +20,9 @@ class GameManager {
     val marketCards: MutableList<Card?> = mutableListOf(null, null, null) // 3 emplacements de boutique
 
     var currentPlayerIndex: Int = 0
+        private set
+
+    var humanHitDamageThisTurn: Int? = null
         private set
 
     var gameEnded: Boolean = false
@@ -87,9 +91,9 @@ class GameManager {
         deck.clear()
 
         // --- CARTES ACTION (Effets immédiats non implémentés ici) ---
-        deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
-        deck.add(Card(20, "Heal", 3, CardType.ACTION, "Heal 2 damage", R.drawable.heart_reactor_card)) // Placeholder
-        deck.add(Card(21, "Tail Slam", 3, CardType.ACTION, "Deal 1 extra damage", R.drawable.tail_slam_card))
+        //deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
+        //deck.add(Card(20, "Heal", 3, CardType.ACTION, "Heal 2 damage", R.drawable.heart_reactor_card)) // Placeholder
+        //deck.add(Card(21, "Tail Slam", 3, CardType.ACTION, "Deal 1 extra damage", R.drawable.tail_slam_card))
 
         // --- CARTES POWER (PERMANENTES) - TOUTES IMPLÉMENTÉES ---
 
@@ -117,8 +121,6 @@ class GameManager {
 
         // UTILITAIRE
         deck.add(Card(16, "Super Reroll", 4, CardType.POWER, "+1 Reroll", R.drawable.super_reroll_card))
-        deck.add(Card(17, "Power Focus", 4, CardType.POWER, "Cards cost -1", R.drawable.power_focus_card))
-
         deck.shuffle()
     }
 
@@ -256,6 +258,8 @@ class GameManager {
         val player = currentPlayer
         if (!player.alive) return
 
+        humanHitDamageThisTurn = null
+
         var claws = 0
         var hearts = 0
         var energy = 0
@@ -344,6 +348,10 @@ class GameManager {
 
                 // Application des dégâts sur la cible
                takeDamageLogic(target, damage, attacker)
+
+                if (target.isHuman) {
+                    humanHitDamageThisTurn = (humanHitDamageThisTurn ?: 0) + damage
+                }
 
                 // Si un joueur DANS Tokyo se fait taper
                 if (target.location == Location.TOKYO && target.alive) {
@@ -463,6 +471,10 @@ class GameManager {
         }
 
         pendingTokyoLeavePlayerId = null
+    }
+
+    fun clearHumanHitDamage() {
+        humanHitDamageThisTurn = null
     }
 
 }
