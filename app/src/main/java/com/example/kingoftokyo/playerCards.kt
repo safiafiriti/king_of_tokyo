@@ -14,11 +14,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
+import com.example.kingoftokyo.game.model.Player
 import com.example.kingoftokyo.game.viewmodel.GameViewModel
 
 class PlayerCardsFragment : DialogFragment(R.layout.fragment_player_cards) {
 
     private val viewModel: GameViewModel by activityViewModels()
+    private lateinit var container: LinearLayout
+    private lateinit var emptyText: TextView
 
     override fun onStart() {
         super.onStart()
@@ -38,24 +41,32 @@ class PlayerCardsFragment : DialogFragment(R.layout.fragment_player_cards) {
         val popup = view.findViewById<View>(R.id.popup_container)
         popup.startAnimation(android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.popup_enter))
 
-        val container = view.findViewById<LinearLayout>(R.id.cards_container)
-        val emptyText = view.findViewById<TextView>(R.id.empty_text)
+        container = view.findViewById(R.id.cards_container)
+        emptyText = view.findViewById(R.id.empty_text)
         val closeButton = view.findViewById<Button>(R.id.close_button)
 
         closeButton.setOnClickListener {
             findNavController().popBackStack()
         }
 
-        // On récupère le joueur actuel pour voir ses cartes
-        val currentPlayerIndex = viewModel.currentPlayerIndex.value ?: 0
-        val players = viewModel.players.value
-        val currentPlayer = players?.getOrNull(currentPlayerIndex)
+        // Observer les joueurs pour mettre à jour la liste des cartes du joueur humain
+        viewModel.players.observe(viewLifecycleOwner) { players ->
+            updateCardsDisplay(players)
+        }
+    }
 
-        if (currentPlayer != null && currentPlayer.cards.isNotEmpty()) {
+    private fun updateCardsDisplay(players: List<Player>) {
+        // CORRECTION : On cherche spécifiquement le joueur humain pour afficher SES cartes
+        // Dans ton GameManager, le joueur humain est toujours le premier (index 0) ou celui avec isHuman=true
+        val humanPlayer = players.firstOrNull { it.isHuman } ?: players.getOrNull(0)
+
+        container.removeAllViews()
+        container.addView(emptyText)
+
+        if (humanPlayer != null && humanPlayer.cards.isNotEmpty()) {
             emptyText.visibility = View.GONE
 
-            // Pour chaque carte possédée, on crée une ImageView
-            currentPlayer.cards.forEach { card ->
+            humanPlayer.cards.forEach { card ->
                 val imageView = ImageView(context)
                 imageView.adjustViewBounds = true
                 imageView.setImageResource(card.imageResId)
@@ -64,8 +75,12 @@ class PlayerCardsFragment : DialogFragment(R.layout.fragment_player_cards) {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                params.setMargins(0, 0, 0, 24) // Marge entre les cartes
+                // Hauteur fixe pour que les cartes ne soient pas trop grandes
+                params.height = 600
+                params.setMargins(0, 0, 0, 32)
+
                 imageView.layoutParams = params
+                imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
                 container.addView(imageView)
             }
