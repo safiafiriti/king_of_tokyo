@@ -24,6 +24,8 @@ class GameFragment : Fragment(R.layout.fragment_game) {
 
     private val viewModel: GameViewModel by activityViewModels()
 
+    private lateinit var attackMessage: TextView
+
     private lateinit var roundTitle: TextView
     private lateinit var rollButton: Button
     private lateinit var validateButton: Button
@@ -68,6 +70,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         rollButton = view.findViewById(R.id.rollButton)
         validateButton = view.findViewById(R.id.validateButton)
         shopButton = view.findViewById(R.id.shop_button) // Bind
+        attackMessage = view.findViewById(R.id.attack_message)
 
         validateButton.isEnabled = false
         validateButton.alpha = 0.5f
@@ -152,6 +155,13 @@ class GameFragment : Fragment(R.layout.fragment_game) {
                 if (index < diceViews.size) {
                     diceViews[index].setImageResource(symbolToDrawable(symbol))
                 }
+            }
+        }
+
+        viewModel.humanHitDamage.observe(viewLifecycleOwner) { damage ->
+            if (damage != null && damage > 0) {
+                showAttackMessage("You were hit : -$damage ❤️")
+                viewModel.consumeHumanHitDamage()
             }
         }
 
@@ -320,6 +330,18 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         }
     }
 
+    private fun showAttackMessage(text: String) {
+        attackMessage.text = text
+        attackMessage.visibility = View.VISIBLE
+        attackMessage.alpha = 1f
 
+        // On annule d'éventuels callbacks précédents
+        attackMessage.removeCallbacks(null)
+
+        // On cache après 3 secondes
+        attackMessage.postDelayed({
+            attackMessage.visibility = View.GONE
+        }, 3000)
+    }
 
 }

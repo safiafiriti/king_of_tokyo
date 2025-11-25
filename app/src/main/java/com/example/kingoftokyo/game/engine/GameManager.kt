@@ -11,10 +11,14 @@ import com.example.kingoftokyo.game.model.Player
 class GameManager {
 
     val players: MutableList<Player> = mutableListOf()
+
     val dice: MutableList<GameDie> =
         MutableList(6) { GameDie(DiceSymbol.values().random(), locked = false) }
 
     var currentPlayerIndex: Int = 0
+        private set
+
+    var humanHitDamageThisTurn: Int? = null
         private set
 
     var gameEnded: Boolean = false
@@ -170,6 +174,8 @@ class GameManager {
         val player = currentPlayer
         if (!player.alive) return
 
+        humanHitDamageThisTurn = null
+
         var claws = 0
         var hearts = 0
         var energy = 0
@@ -233,6 +239,10 @@ class GameManager {
 
             if (shouldHit) {
                 target.takeDamage(damage)
+
+                if (target.isHuman) {
+                    humanHitDamageThisTurn = (humanHitDamageThisTurn ?: 0) + damage
+                }
 
                 // Si un joueur DANS Tokyo se fait taper
                 if (target.location == Location.TOKYO && target.alive) {
@@ -304,6 +314,10 @@ class GameManager {
         }
 
         pendingTokyoLeavePlayerId = null
+    }
+
+    fun clearHumanHitDamage() {
+        humanHitDamageThisTurn = null
     }
 
 }
