@@ -9,52 +9,52 @@
     <!-- POPUP -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/popup_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="366dp"
+        android:layout_height="186dp"
         android:layout_margin="40dp"
         android:background="@drawable/bg_stay_leave_popup"
         android:padding="24dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- TITLE -->
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/stay_or_leave_tokyo"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/emoji_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="31dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="4dp"
             android:text="🤔"
-            android:textSize="34sp"
-            app:layout_constraintTop_toBottomOf="@id/title_text"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="4dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_text" />
 
         <!-- BUTTONS -->
         <LinearLayout
             android:id="@+id/buttons_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
             android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/emoji_text"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/emoji_text">
 
             <!-- STAY BUTTON -->
             <Button
@@ -62,22 +62,22 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="@string/stay_in_tokyo"
-                android:textStyle="bold"
                 android:backgroundTint="#3AC769"
-                android:textColor="#000000" />
+                android:text="@string/stay_in_tokyo"
+                android:textColor="#000000"
+                android:textStyle="bold" />
 
             <!-- LEAVE BUTTON -->
             <Button
                 android:id="@+id/button_leave"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:text="@string/leave_tokyo"
-                android:textStyle="bold"
                 android:backgroundTint="#E7C301"
+                android:text="@string/leave_tokyo"
                 android:textColor="#000000"
-                android:layout_marginStart="12dp"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
