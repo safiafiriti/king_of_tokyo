@@ -5,12 +5,15 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.graphics.Color
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels // Important pour partager les données
 import androidx.navigation.fragment.findNavController
 import com.example.kingoftokyo.R
+import com.example.kingoftokyo.game.model.Card
 import com.example.kingoftokyo.game.viewmodel.GameViewModel
 
 class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
@@ -19,6 +22,8 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
     private val viewModel: GameViewModel by activityViewModels()
 
     private lateinit var cardViews: List<ImageView>
+    private lateinit var buyButton: Button
+    private lateinit var cancelButton: Button
     private var selectedIndex: Int? = null
 
     override fun onStart() {
@@ -43,6 +48,9 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // EMPECHER LA FERMETURE PAR RETOUR ARRIERE (force l'usage des boutons)
+        isCancelable = false
+
         // Animation d'entrée
         val popup = view.findViewById<View>(R.id.popup_container)
         val anim = android.view.animation.AnimationUtils.loadAnimation(
@@ -57,35 +65,49 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
         val card3: ImageView = view.findViewById(R.id.card_image_3)
         cardViews = listOf(card1, card2, card3)
 
-        val cancelButton: Button = view.findViewById(R.id.button_cancel)
-        val buyButton: Button = view.findViewById(R.id.button_buy)
+        cancelButton = view.findViewById(R.id.button_cancel)
+        buyButton = view.findViewById(R.id.button_buy)
+
+        // GESTION DES BOUTONS SELON LA PHASE
+        viewModel.isBuyPhase.observe(viewLifecycleOwner) { isBuyPhase ->
+            if (isBuyPhase) {
+                // Phase d'achat (Fin de tour)
+                buyButton.visibility = View.VISIBLE
+                cancelButton.text = getString(R.string.cancel)
+            } else {
+                // Phase de consultation (Pendant le tour)
+                buyButton.visibility = View.INVISIBLE
+                cancelButton.text = "Fermer"
+            }
+            selectedIndex = null
+            updateSelectionVisuals()
+        }
 
         // --- OBSERVER LES CARTES DISPONIBLES ---
         // Dès que la liste des cartes change dans le ViewModel, on met à jour les images ici
         viewModel.marketCards.observe(viewLifecycleOwner) { cards ->
-            cards.forEachIndexed { index, card ->
-                if (index < cardViews.size) {
-                    if (card != null) {
-                        // Affiche l'image de la carte (nécessite l'étape 1 faite dans Card.kt)
-                        cardViews[index].setImageResource(card.imageResId)
-                        cardViews[index].visibility = View.VISIBLE
-                        cardViews[index].isClickable = true
-                        cardViews[index].alpha = 1.0f // Reset opacité si réutilisé
-                    } else {
-                        // Si l'emplacement est vide (plus de cartes dans le deck)
-                        cardViews[index].visibility = View.INVISIBLE
-                        cardViews[index].isClickable = false
-                    }
-                }
-            }
-            // Si on a acheté une carte, on reset la sélection
-            selectedIndex = null
+            updateCardsImages(cards)
         }
 
         // Gestion du clic sur une carte (Sélection visuelle)
         cardViews.forEachIndexed { index, imageView ->
             imageView.setOnClickListener {
-                onCardClicked(index)
+                val isBuyPhase = viewModel.isBuyPhase.value == true
+
+                // Si on n'est pas en phase d'achat, on ne sélectionne pas
+                if (!isBuyPhase) return@setOnClickListener
+
+                val cards = viewModel.marketCards.value
+                val currentEnergy = viewModel.getCurrentPlayerEnergy()
+                val card = cards?.getOrNull(index)
+
+                if (card != null) {
+                    if (currentEnergy >= card.cost) {
+                        onCardClicked(index)
+                    } else {
+                        Toast.makeText(context, "Pas assez d'énergie !", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
 
@@ -102,18 +124,61 @@ class PowerCardFragment : DialogFragment(R.layout.fragment_power_card) {
                 // On tente d'acheter la carte sélectionnée via le ViewModel
                 viewModel.onBuyCard(index)
 
-                // Optionnel : Si tu veux fermer la boutique après un achat, décommente la ligne ci-dessous.
-                // Sinon, le joueur peut acheter d'autres cartes tant qu'il a de l'énergie.
-                // findNavController().popBackStack()
+                val energyLeft = viewModel.getCurrentPlayerEnergy()
+                // Optionnel : Fermeture auto si < 3 énergies
+                if (energyLeft < 3) {
+                    viewModel.onCloseShop()
+                    findNavController().popBackStack()
+                } else {
+                    selectedIndex = null
+                    updateSelectionVisuals()
+                }
             }
         }
     }
 
-    private fun onCardClicked(index: Int) {
-        selectedIndex = index
-        // Effet visuel : la carte sélectionnée reste opaque, les autres deviennent semi-transparentes
+    private fun updateCardsImages(cards: List<Card?>) {
         cardViews.forEachIndexed { i, imageView ->
-            imageView.alpha = if (i == index) 1.0f else 0.5f
+            val card = cards.getOrNull(i)
+            if (card != null) {
+                imageView.setImageResource(card.imageResId)
+                imageView.visibility = View.VISIBLE
+                imageView.alpha = 1.0f // Toujours visible
+            } else {
+                imageView.visibility = View.INVISIBLE
+            }
         }
+        updateSelectionVisuals()
+    }
+
+    private fun onCardClicked(index: Int) {
+        if (selectedIndex == index) {
+            selectedIndex = null
+        } else {
+            selectedIndex = index
+        }
+        updateSelectionVisuals()
+    }
+
+    private fun updateSelectionVisuals() {
+        cardViews.forEachIndexed { i, imageView ->
+            if (selectedIndex != null) {
+                if (i == selectedIndex) {
+                    imageView.alpha = 1.0f
+                    imageView.scaleX = 1.1f
+                    imageView.scaleY = 1.1f
+                } else {
+                    imageView.alpha = 0.5f
+                    imageView.scaleX = 1.0f
+                    imageView.scaleY = 1.0f
+                }
+            } else {
+                imageView.alpha = 1.0f
+                imageView.scaleX = 1.0f
+                imageView.scaleY = 1.0f
+            }
+        }
+        buyButton.isEnabled = selectedIndex != null
+        buyButton.alpha = if (selectedIndex != null) 1.0f else 0.5f
     }
 }

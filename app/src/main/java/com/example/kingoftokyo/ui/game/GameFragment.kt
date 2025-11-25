@@ -3,7 +3,6 @@ package com.example.kingoftokyo.ui.game
 import android.os.Bundle
 import android.view.View
 import com.example.kingoftokyo.game.viewmodel.GameViewModel
-import com.example.kingoftokyo.game.engine.GameManager
 import com.example.kingoftokyo.game.model.Location
 import android.widget.Button
 import android.widget.ImageView
@@ -24,6 +23,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
     private lateinit var roundTitle: TextView
     private lateinit var rollButton: Button
     private lateinit var validateButton: Button
+    private lateinit var shopButton: Button // Bouton Boutique
     private lateinit var diceViews: List<ImageView>
 
     // REXMAW stats
@@ -53,6 +53,7 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         roundTitle = view.findViewById(R.id.round_title_text)
         rollButton = view.findViewById(R.id.rollButton)
         validateButton = view.findViewById(R.id.validateButton)
+        shopButton = view.findViewById(R.id.shop_button) // Bind
 
         diceViews = listOf(
             view.findViewById(R.id.dice1),
@@ -83,13 +84,9 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         venomEnergy = view.findViewById<LinearLayout>(R.id.venomJunch_energy).findViewById(R.id.stat_value)
 
 
-        rollButton.setOnClickListener {
-            viewModel.onRollClicked()
-        }
-
-        validateButton.setOnClickListener {
-            viewModel.onValidateClicked()
-        }
+        rollButton.setOnClickListener { viewModel.onRollClicked() }
+        validateButton.setOnClickListener { viewModel.onValidateClicked() }
+        shopButton.setOnClickListener { viewModel.onShopPeekClicked() } // Clic sur Cards
 
         viewModel.showShopEvent.observe(viewLifecycleOwner) { shouldShow ->
             if (shouldShow) {
@@ -192,30 +189,16 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         }
 
         viewModel.players.observe(viewLifecycleOwner) { players ->
-
+            // Update Tokyo badges
             players.forEach { player ->
                 when (player.name.lowercase()) {
-                    "rexmaw" -> toggleTokyoBadge(
-                        player.location == Location.TOKYO,
-                        R.id.rexmaw_tokyo
-                    )
-                    "meko" -> toggleTokyoBadge(
-                        player.location == Location.TOKYO,
-                        R.id.meko_tokyo
-                    )
-                    "grumpjaw" -> toggleTokyoBadge(
-                        player.location == Location.TOKYO,
-                        R.id.grumJaw_tokyo
-                    )
-                    "venomjunch" -> toggleTokyoBadge(
-                        player.location == Location.TOKYO,
-                        R.id.venomJunch_tokyo
-                    )
+                    "rexmaw" -> toggleTokyoBadge(player.location == Location.TOKYO, R.id.rexmaw_tokyo)
+                    "meko" -> toggleTokyoBadge(player.location == Location.TOKYO, R.id.meko_tokyo)
+                    "grumpjaw" -> toggleTokyoBadge(player.location == Location.TOKYO, R.id.grumJaw_tokyo)
+                    "venomjunch" -> toggleTokyoBadge(player.location == Location.TOKYO, R.id.venomJunch_tokyo)
                 }
             }
         }
-
-
     }
 
     private fun updateStats(
@@ -251,5 +234,4 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         val badge = view?.findViewById<TextView>(viewId) ?: return
         badge.visibility = if (isInTokyo) View.VISIBLE else View.GONE
     }
-
 }

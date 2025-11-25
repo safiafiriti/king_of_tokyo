@@ -43,11 +43,19 @@ class GameViewModel : ViewModel() {
     private val _showShopEvent = MutableLiveData<Boolean>()
     val showShopEvent: LiveData<Boolean> = _showShopEvent
 
+    // Nouvelle variable : Est-ce qu'on est en phase d'achat (fin de tour) ou juste en train de regarder ?
+    private val _isBuyPhase = MutableLiveData<Boolean>(false)
+    val isBuyPhase: LiveData<Boolean> = _isBuyPhase
+
 
     fun startNewGame(playerNames: List<String>) {
         gameManager.initGame(playerNames)
         gameManager.startTurn()
         _rollsThisTurn.value = 0
+
+        // On affiche les cartes dès le début
+        _marketCards.value = gameManager.marketCards.toList()
+
         refreshState()
     }
 
@@ -66,16 +74,26 @@ class GameViewModel : ViewModel() {
         val player = gameManager.currentPlayer
 
         // 3 LOGIQUE BOUTIQUE :
-        // Si c'est un humain et qu'il a assez d'énergie (>= 3)-> on ouvre la boutique
-        // Sinonon termine le tour
-        if (player.isHuman && player.energy >= 3) {
+        // CORRECTION ICI : On ouvre TOUJOURS la boutique si c'est un humain, même avec 0 énergie.
+        if (player.isHuman) {
             _marketCards.value = gameManager.marketCards.toList()
+            _isBuyPhase.value = true // On active le mode achat
+
+            // Astuce : on reset à false avant de mettre à true pour forcer l'ouverture si jamais c'était bloqué
+            _showShopEvent.value = false
             _showShopEvent.value = true
         } else {
             endTurnProperly()
         }
     }
 
+    // Action pour le bouton "Cards" (Regarder seulement)
+    fun onShopPeekClicked() {
+        _isBuyPhase.value = false // Mode consultation
+        _marketCards.value = gameManager.marketCards.toList()
+        _showShopEvent.value = false
+        _showShopEvent.value = true
+    }
 
     fun onBuyCard(index: Int) {
         val player = gameManager.currentPlayer
@@ -89,7 +107,12 @@ class GameViewModel : ViewModel() {
 
     fun onCloseShop() {
         _showShopEvent.value = false
-        endTurnProperly()
+
+        // Si on était en phase d'achat (fin de tour), fermer la boutique termine le tour
+        // Si on regardait juste (bouton Cards), on ne finit pas le tour
+        if (_isBuyPhase.value == true) {
+            endTurnProperly()
+        }
     }
 
     private fun endTurnProperly() {
@@ -98,6 +121,7 @@ class GameViewModel : ViewModel() {
         _rollsThisTurn.value = 0
         refreshState()
     }
+
     fun startGameWithSelectedMonster(selectedMonster: String) {
         humanPlayerSelectedMonster = selectedMonster
         // Assign the human player to the selected monster
@@ -105,6 +129,10 @@ class GameViewModel : ViewModel() {
         val remainingMonsters = monsters - selectedMonster
         gameManager.initGame(listOf(selectedMonster) + remainingMonsters)
         gameManager.startTurn()
+
+        // Init cartes
+        _marketCards.value = gameManager.marketCards.toList()
+
         refreshState()
     }
 
@@ -120,8 +148,6 @@ class GameViewModel : ViewModel() {
         refreshState()
     }
 
-
-
     private fun refreshState() {
         _players.value = gameManager.players.toList()
         _dice.value = gameManager.dice.map { it.symbol }
@@ -129,5 +155,11 @@ class GameViewModel : ViewModel() {
         _currentPlayerIndex.value = gameManager.currentPlayerIndex
         _gameEnded.value = gameManager.gameEnded
         _winnerId.value = gameManager.winnerId
+    }
+
+    // Helper
+    fun getCurrentPlayerEnergy(): Int {
+        val index = _currentPlayerIndex.value ?: 0
+        return _players.value?.getOrNull(index)?.energy ?: 0
     }
 }

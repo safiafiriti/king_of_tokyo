@@ -1,12 +1,13 @@
 package com.example.kingoftokyo.game.engine
 
+import com.example.kingoftokyo.R
 import com.example.kingoftokyo.game.model.Card
 import com.example.kingoftokyo.game.model.CardType
 import com.example.kingoftokyo.game.model.DiceSymbol
 import com.example.kingoftokyo.game.model.GameDie
 import com.example.kingoftokyo.game.model.Location
 import com.example.kingoftokyo.game.model.Player
-import com.example.kingoftokyo.R
+
 class GameManager {
 
     val players: MutableList<Player> = mutableListOf()
@@ -60,21 +61,21 @@ class GameManager {
         refillMarket()
     }
 
-
     // Fonction qui initialise la pioche
     private fun initDeck() {
         deck.clear()
         // On crée les cartes manuellement en lien avec tes drawables
         deck.add(Card(1, "Rage Boost", 3, CardType.ACTION, "Gain energy on damage", R.drawable.rage_boost_card))
-        deck.add(Card(2, "Armor Plating", 4, CardType.POWER, "Ignore 1 damage", R.drawable.iron_shell_card)) // iron_shell pour l'exemple
+        deck.add(Card(2, "Armor Plating", 4, CardType.POWER, "Ignore 1 damage", R.drawable.iron_shell_card))
         deck.add(Card(3, "Energy Magnet", 3, CardType.POWER, "Gain energy when others do", R.drawable.energy_magnet_card))
         deck.add(Card(4, "Spiky Armor", 5, CardType.POWER, "Deal dmg when attacked", R.drawable.spiky_armor_card))
         deck.add(Card(5, "Solar Absorbal", 4, CardType.POWER, "Gain energy on other's loss", R.drawable.solar_absorbal_card))
         deck.add(Card(6, "Mega Battery", 4, CardType.POWER, "Gain energy at start turn", R.drawable.mega_battery_card))
-        deck.add(Card(7, "Toxic Breath", 5, CardType.POWER, "Extra damage on attack", R.drawable.toxic_vreath_card)) // attention au nom du fichier vreath/breath
+        deck.add(Card(7, "Toxic Breath", 5, CardType.POWER, "Extra damage on attack", R.drawable.toxic_vreath_card))
         deck.add(Card(8, "Colossal Claws", 7, CardType.POWER, "Extra damage", R.drawable.colossal_claws))
         deck.add(Card(9, "Regeneration", 6, CardType.POWER, "Heal at start turn", R.drawable.regeneration_core_card))
         deck.add(Card(10, "Super Reroll", 4, CardType.POWER, "+1 Reroll", R.drawable.super_reroll_card))
+
         deck.shuffle() // Mélanger pour l'aléatoire
     }
 
@@ -108,6 +109,7 @@ class GameManager {
         }
         return false
     }
+
     fun startTurn() {
         if (gameEnded) return
 

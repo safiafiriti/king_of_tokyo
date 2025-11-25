@@ -62,11 +62,11 @@
         <action
             android:id="@+id/action_gameFragment_to_wonGameFragment"
             app:destination="@id/wonGameFragment" />
+
+        <!-- Lien vers la boutique -->
         <action
             android:id="@+id/action_gameFragment_to_powerCardFragment"
             app:destination="@id/powerCardFragment" />
-
-
 
         <action
             android:id="@+id/action_gameFragment_to_stayLeaveTokyoFragment"
