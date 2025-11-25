@@ -72,14 +72,20 @@ class PlayerCardsFragment : DialogFragment(R.layout.fragment_player_cards) {
                 imageView.setImageResource(card.imageResId)
 
                 val params = LinearLayout.LayoutParams(
+                    // Keep MATCH_PARENT for width
                     LinearLayout.LayoutParams.MATCH_PARENT,
+                    // CHANGE: Use WRAP_CONTENT so the height is defined by the image itself
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                // Hauteur fixe pour que les cartes ne soient pas trop grandes
-                params.height = 600
+
+                // REMOVE: params.height = 600
+
+                // Keep the margin for the small space between cards (32dp margin)
                 params.setMargins(0, 0, 0, 32)
 
                 imageView.layoutParams = params
+                // CHANGE: Use FIT_XY if you want the card to fill the width and respect the aspect ratio
+                // Or just leave it as FIT_CENTER if you prefer, but WRAP_CONTENT is the key change.
                 imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
                 container.addView(imageView)
