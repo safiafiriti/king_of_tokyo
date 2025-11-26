@@ -32,6 +32,11 @@ You can view the project mockup here ✨:
 The task breakdown and contributions are documented in the following Google Doc:
 [https://docs.google.com/document/d/1Jzyb5PPOqdaORT5xRdsicVLJKMYlVh-TQF3uKnpoogQ/edit?usp=sharing](https://docs.google.com/document/d/1Jzyb5PPOqdaORT5xRdsicVLJKMYlVh-TQF3uKnpoogQ/edit?usp=sharing)
 
+## 📌 Video Link
+
+You can watch the project video here:  
+[https://drive.google.com/file/d/1rKsF1CYXwIiD-J5inDiOwo5aTqgx4OD-/view?usp=sharing](https://drive.google.com/file/d/1rKsF1CYXwIiD-J5inDiOwo5aTqgx4OD-/view?usp=sharing)
+
 ---
 
 ## 🚀 How to Run
