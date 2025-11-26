@@ -1,29 +1,44 @@
 # king_of_tokyo
 
-Welcome to our game project! 👾  
+Welcome to our game project! 👾
+Developed with passion by **Yasmine MAZGHI**, **Safia FIRITI**, **Hiba IAZZA** et **Douae RATBI**.
 
-This app is inspired by **King of Tokyo** and reimagined with our own custom features and designs.  
+This app is inspired by **King of Tokyo** and reimagined with our own custom features and designs.
 We built it in **Android Studio (Kotlin)** and created our own avatars and gameplay logic while staying true to the original concept.
-
 
 <p align="center">
   <img src="app/src/main/res/drawable/logo.png" alt="Game Logo" width="280"/>
 </p>
 
+---
 
-##  Project Mockup 
+## 👥 Team Members
 
-You can view the project mockup here ✨:  
+* **Yasmine MAZGHI**
+* **Safia FIRITI**
+* **Hiba IAZZA**
+* **Douae RATBI**
 
-https://www.figma.com/design/6eladjPKjI1MvSXrC4vguY/KIngOfTokyo-prototype?node-id=0-1&t=seeLONMRcxxS52DD-1
+---
 
+## 🎨 Project Mockup
 
-##  Work Distribution
+You can view the project mockup here ✨:
+[https://www.figma.com/design/6eladjPKjI1MvSXrC4vguY/KIngOfTokyo-prototype?node-id=0-1&t=seeLONMRcxxS52DD-1](https://www.figma.com/design/6eladjPKjI1MvSXrC4vguY/KIngOfTokyo-prototype?node-id=0-1&t=seeLONMRcxxS52DD-1)
 
-The task breakdown and contributions are documented in the following Google Doc:  
+---
 
+## 📌 Work Distribution
 
-## 🚀 How to Run 
+The task breakdown and contributions are documented in the following Google Doc:
+*(ajoute ici votre lien)*
+
+---
+
+## 🚀 How to Run
+
 1. Clone the repository
 2. Open in Android Studio
 3. Run the app on an emulator or a device
+
+---
