@@ -3,15 +3,19 @@ package com.example.kingoftokyo.game.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.kingoftokyo.game.engine.GameManager
 import com.example.kingoftokyo.game.model.Card
 import com.example.kingoftokyo.game.model.DiceSymbol
 import com.example.kingoftokyo.game.model.Player
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
 
     private val gameManager = GameManager()
 
+    // Damage taken by human this turn (for UI popup, shake, etc.)
     private val _humanHitDamage = MutableLiveData<Int?>()
     val humanHitDamage: LiveData<Int?> = _humanHitDamage
 
@@ -41,36 +45,58 @@ class GameViewModel : ViewModel() {
     private val _tokyoLeavePlayerId = MutableLiveData<Int?>()
     val tokyoLeavePlayerId: LiveData<Int?> = _tokyoLeavePlayerId
 
-    // LiveData pour la boutique
+    // Boutique
     private val _marketCards = MutableLiveData<List<Card?>>()
     val marketCards: LiveData<List<Card?>> = _marketCards
 
-    // Evénement pour ouvrir la popup (True = ouvrir)
+    // Ouvrir/fermer le fragment "Cards"
     private val _showShopEvent = MutableLiveData<Boolean>()
     val showShopEvent: LiveData<Boolean> = _showShopEvent
 
-    // Nouvelle variable : Est-ce qu'on est en phase d'achat (fin de tour) ou juste en train de regarder ?
+    // Est-ce une phase d'achat de fin de tour ?
     private val _isBuyPhase = MutableLiveData<Boolean>(false)
     val isBuyPhase: LiveData<Boolean> = _isBuyPhase
 
     private val _roundNumber = MutableLiveData<Int>()
     val roundNumber: LiveData<Int> = _roundNumber
 
+    // =========================================================
+    // INIT
+    // =========================================================
 
     fun startNewGame(playerNames: List<String>) {
         gameManager.initGame(playerNames)
         gameManager.startTurn()
         _rollsThisTurn.value = 0
 
-        // On affiche les cartes dès le début
         _marketCards.value = gameManager.marketCards.toList()
+        _humanHitDamage.value = null
 
         refreshState()
     }
 
-    // Action pour le bouton "Cards" (Regarder seulement)
+    fun startGameWithSelectedMonster(selectedMonster: String) {
+        humanPlayerSelectedMonster = selectedMonster
+        val monsters = listOf("rexmaw", "meko", "grumpjaw", "venomjunch")
+        val remainingMonsters = monsters - selectedMonster
+
+        // Human = first, others = CPU
+        gameManager.initGame(listOf(selectedMonster) + remainingMonsters)
+        gameManager.startTurn()
+        _rollsThisTurn.value = 0
+        _marketCards.value = gameManager.marketCards.toList()
+        _humanHitDamage.value = null
+
+        refreshState()
+    }
+
+    // =========================================================
+    // SHOP
+    // =========================================================
+
+    // Bouton "Cards" (juste consulter)
     fun onShopPeekClicked() {
-        _isBuyPhase.value = false // Mode consultation
+        _isBuyPhase.value = false
         _marketCards.value = gameManager.marketCards.toList()
         _showShopEvent.value = false
         _showShopEvent.value = true
@@ -81,7 +107,6 @@ class GameViewModel : ViewModel() {
         val success = gameManager.buyCard(player, index)
         if (success) {
             refreshState()
-            // Met à jour la boutique pour voir la nouvelle carte (si le joueur veut en acheter une autre)
             _marketCards.value = gameManager.marketCards.toList()
         }
     }
@@ -89,35 +114,20 @@ class GameViewModel : ViewModel() {
     fun onCloseShop() {
         _showShopEvent.value = false
 
-        // Si on était en phase d'achat (fin de tour), fermer la boutique termine le tour
-        // Si on regardait juste (bouton Cards), on ne finit pas le tour
+        // Si on était en phase d'achat de fin de tour → terminer le tour humain
         if (_isBuyPhase.value == true) {
-            endTurnProperly()
+            endTurnAndMaybePlayAi()
         }
     }
 
-    private fun endTurnProperly() {
-        gameManager.endTurn()
-        gameManager.startTurn()
-        _rollsThisTurn.value = 0
-        refreshState()
-    }
-
-    fun startGameWithSelectedMonster(selectedMonster: String) {
-        humanPlayerSelectedMonster = selectedMonster
-        // Assign the human player to the selected monster
-        val monsters = listOf("rexmaw", "meko", "grumpjaw", "venomjunch")
-        val remainingMonsters = monsters - selectedMonster
-        gameManager.initGame(listOf(selectedMonster) + remainingMonsters)
-        gameManager.startTurn()
-
-        // Init cartes
-        _marketCards.value = gameManager.marketCards.toList()
-
-        refreshState()
-    }
+    // =========================================================
+    // HUMAN ACTIONS
+    // =========================================================
 
     fun onRollClicked() {
+        // Empêcher de cliquer pendant un tour IA ou après la fin
+        if (!gameManager.currentPlayer.isHuman || gameManager.gameEnded) return
+
         gameManager.rollDice()
         val current = _rollsThisTurn.value ?: 0
         _rollsThisTurn.value = current + 1
@@ -125,43 +135,43 @@ class GameViewModel : ViewModel() {
     }
 
     fun onToggleDice(index: Int) {
+        if (!gameManager.currentPlayer.isHuman || gameManager.gameEnded) return
+
         gameManager.toggleLock(index)
         refreshState()
     }
 
     fun onValidateClicked() {
-        // 0️⃣ Lock ALL the dice visually + logically
+        if (!gameManager.currentPlayer.isHuman || gameManager.gameEnded) return
+
+        // Lock ALL the dice
         gameManager.lockAllDice()
         refreshState()
 
+        // Resolve dice effects (damage, heal, energy, VP…)
         gameManager.resolveDice()
         refreshState()
 
+        // Si un humain doit décider de quitter Tokyo → ouvrir la popup
         val pendingId = gameManager.pendingTokyoLeavePlayerId
         if (pendingId != null) {
             _tokyoLeavePlayerId.value = pendingId
             return
         }
 
+        // Check fin de partie
         if (gameManager.gameEnded) {
             _gameEnded.value = true
             _winnerId.value = gameManager.winnerId
             return
         }
-        val player = gameManager.currentPlayer
 
-        // 3 LOGIQUE BOUTIQUE :
-        // CORRECTION ICI : On ouvre TOUJOURS la boutique si c'est un humain, même avec 0 énergie.
-        if (player.isHuman) {
-            _marketCards.value = gameManager.marketCards.toList()
-            _isBuyPhase.value = true // On active le mode achat
+        // Phase d'achat de fin de tour pour l'humain
+        _marketCards.value = gameManager.marketCards.toList()
+        _isBuyPhase.value = true
 
-            // Astuce : on reset à false avant de mettre à true pour forcer l'ouverture si jamais c'était bloqué
-            _showShopEvent.value = false
-            _showShopEvent.value = true
-        } else {
-            endTurnProperly()
-        }
+        _showShopEvent.value = false
+        _showShopEvent.value = true
     }
 
     fun onTokyoLeaveDecision(leave: Boolean) {
@@ -175,11 +185,112 @@ class GameViewModel : ViewModel() {
             return
         }
 
+        // Après la décision Tokyo → fin de tour, puis IA éventuelle
+        endTurnAndMaybePlayAi()
+    }
+
+    // =========================================================
+    // TURN FLOW + AI
+    // =========================================================
+
+    // Finir le tour courant, passer au suivant, et lancer l'IA si besoin
+    private fun endTurnAndMaybePlayAi() {
         gameManager.endTurn()
         gameManager.startTurn()
         _rollsThisTurn.value = 0
         refreshState()
+
+        processAiIfNeeded()
     }
+
+    // Si le joueur courant est une IA, on lui fait jouer un ou plusieurs tours
+    private fun processAiIfNeeded() {
+        if (gameManager.gameEnded) return
+        if (gameManager.currentPlayer.isHuman) return
+
+        // Si un humain doit décider de quitter Tokyo → l'IA s'arrête
+        if (gameManager.pendingTokyoLeavePlayerId != null) {
+            _tokyoLeavePlayerId.value = gameManager.pendingTokyoLeavePlayerId
+            return
+        }
+
+        // Enchaîne les tours IA avec des delays pour qu'on les voie jouer
+        viewModelScope.launch {
+            var safety = 0
+            while (
+                !gameManager.gameEnded &&
+                !gameManager.currentPlayer.isHuman &&
+                gameManager.pendingTokyoLeavePlayerId == null &&
+                safety < 10
+            ) {
+                playSingleAiTurn()
+                safety++
+            }
+        }
+    }
+
+    // Un tour complet d'IA : roll 3x → lock → resolve → shop → endTurn
+    private suspend fun playSingleAiTurn() {
+        // On suppose que startTurn() a déjà été appelé pour cette IA
+
+        var localRolls = 0
+        while (localRolls < 3 && !gameManager.gameEnded) {
+            gameManager.rollDice()
+            refreshState()
+            delay(600L)  // temps pour voir chaque roll
+
+            localRolls++
+        }
+
+        // Lock visuellement
+        gameManager.lockAllDice()
+        refreshState()
+        delay(400L)
+
+        // Résoudre les dés
+        gameManager.resolveDice()
+        refreshState()
+        delay(700L)
+
+        // Si un humain doit décider de quitter Tokyo → stop ici
+        val pendingId = gameManager.pendingTokyoLeavePlayerId
+        if (pendingId != null) {
+            _tokyoLeavePlayerId.value = pendingId
+            return
+        }
+
+        // Fin de partie ?
+        if (gameManager.gameEnded) {
+            _gameEnded.value = true
+            _winnerId.value = gameManager.winnerId
+            refreshState()
+            return
+        }
+
+        // IA achète une carte si possible
+        val aiPlayer = gameManager.currentPlayer
+        val cards = gameManager.marketCards
+        for (i in cards.indices) {
+            val c = cards[i] ?: continue
+            if (aiPlayer.energy >= c.cost) {
+                gameManager.buyCard(aiPlayer, i)
+                break
+            }
+        }
+        refreshState()
+        delay(500L)
+
+        // Fin du tour IA → joueur suivant
+        gameManager.endTurn()
+        gameManager.startTurn()
+        _rollsThisTurn.value = 0
+        refreshState()
+        delay(500L)
+    }
+
+    // =========================================================
+    // STATE REFRESH + HELPERS
+    // =========================================================
 
     private fun refreshState() {
         _players.value = gameManager.players.toList()
@@ -192,7 +303,6 @@ class GameViewModel : ViewModel() {
         _winnerId.value = gameManager.winnerId
     }
 
-    // Helper
     fun getCurrentPlayerEnergy(): Int {
         val index = _currentPlayerIndex.value ?: 0
         return _players.value?.getOrNull(index)?.energy ?: 0
@@ -202,5 +312,5 @@ class GameViewModel : ViewModel() {
         gameManager.clearHumanHitDamage()
         _humanHitDamage.value = null
     }
-
 }
+
