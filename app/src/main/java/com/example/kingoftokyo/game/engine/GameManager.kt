@@ -39,11 +39,12 @@ class GameManager {
 
     private var rollsThisTurn: Int = 0
 
-    // Nombre max de lancers (dynamique selon les cartes)
-    private val maxRollsPerTurn: Int
+    // --- CORRECTION ---
+    // On rend cette propriété PUBLIQUE pour que le ViewModel puisse la lire
+    val maxRollsPerTurn: Int
         get() {
             val player = currentPlayer
-            // CARTE: Super Reroll (+1 lancer)
+            // CARTE: Super Reroll (+1 lancer => 3 + 1 = 4)
             return if (hasCard(player, "Super Reroll")) 4 else 3
         }
 

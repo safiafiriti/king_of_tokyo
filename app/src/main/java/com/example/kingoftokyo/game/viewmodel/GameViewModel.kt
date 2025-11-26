@@ -60,6 +60,10 @@ class GameViewModel : ViewModel() {
     private val _roundNumber = MutableLiveData<Int>()
     val roundNumber: LiveData<Int> = _roundNumber
 
+    // --- NOUVEAU : Exposer le max de lancers (pour l'UI) ---
+    private val _maxRolls = MutableLiveData<Int>()
+    val maxRolls: LiveData<Int> = _maxRolls
+
     // =========================================================
     // INIT
     // =========================================================
@@ -233,8 +237,11 @@ class GameViewModel : ViewModel() {
     private suspend fun playSingleAiTurn() {
         // On suppose que startTurn() a déjà été appelé pour cette IA
 
+        // --- CORRECTION AI : L'IA doit aussi respecter son max de lancers ---
+        val maxRolls = gameManager.maxRollsPerTurn
         var localRolls = 0
-        while (localRolls < 3 && !gameManager.gameEnded) {
+
+        while (localRolls < maxRolls && !gameManager.gameEnded) {
             gameManager.rollDice()
             refreshState()
             delay(600L)  // temps pour voir chaque roll
@@ -301,6 +308,9 @@ class GameViewModel : ViewModel() {
         _currentPlayerIndex.value = gameManager.currentPlayerIndex
         _gameEnded.value = gameManager.gameEnded
         _winnerId.value = gameManager.winnerId
+
+        // --- NOUVEAU : Mettre à jour le max de lancers ---
+        _maxRolls.value = gameManager.maxRollsPerTurn
     }
 
     fun getCurrentPlayerEnergy(): Int {
@@ -313,4 +323,3 @@ class GameViewModel : ViewModel() {
         _humanHitDamage.value = null
     }
 }
-

@@ -178,10 +178,14 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             highlightCurrentPlayer(players, index)
         }
 
+        // --- CORRECTION : Utiliser le max de lancers dynamique ---
         viewModel.rollsThisTurn.observe(viewLifecycleOwner) { rolls ->
+            // On récupère la limite actuelle (3 par défaut, 4 avec la carte)
+            val maxRolls = viewModel.maxRolls.value ?: 3
+
             rollButton.text = if (rolls == 0) "Roll" else "Reroll"
 
-            val canRoll = rolls < 3 && viewModel.gameEnded.value != true
+            val canRoll = rolls < maxRolls && viewModel.gameEnded.value != true
             rollButton.isEnabled = canRoll
             rollButton.alpha = if (canRoll) 1f else 0.5f
 
@@ -190,7 +194,16 @@ class GameFragment : Fragment(R.layout.fragment_game) {
             validateButton.alpha = if (canValidate) 1f else 0.5f
 
             val locked = viewModel.diceLocked.value
-                    updateDiceState(rolls, locked)
+            updateDiceState(rolls, locked)
+        }
+
+        // --- NOUVEAU : Observer maxRolls pour mettre à jour l'UI si ça change ---
+        viewModel.maxRolls.observe(viewLifecycleOwner) { maxRolls ->
+            // Forcer la mise à jour du bouton si le nombre de lancers change (ex: achat de carte)
+            val rolls = viewModel.rollsThisTurn.value ?: 0
+            val canRoll = rolls < maxRolls && viewModel.gameEnded.value != true
+            rollButton.isEnabled = canRoll
+            rollButton.alpha = if (canRoll) 1f else 0.5f
         }
 
         viewModel.gameEnded.observe(viewLifecycleOwner) { ended ->
