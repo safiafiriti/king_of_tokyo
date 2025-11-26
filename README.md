@@ -31,7 +31,7 @@ You can view the project mockup here ✨:
 ## 📌 Work Distribution
 
 The task breakdown and contributions are documented in the following Google Doc:
-*(ajoute ici votre lien)*
+[https://docs.google.com/document/d/1Jzyb5PPOqdaORT5xRdsicVLJKMYlVh-TQF3uKnpoogQ/edit?usp=sharing](https://docs.google.com/document/d/1Jzyb5PPOqdaORT5xRdsicVLJKMYlVh-TQF3uKnpoogQ/edit?usp=sharing)
 
 ---
 
