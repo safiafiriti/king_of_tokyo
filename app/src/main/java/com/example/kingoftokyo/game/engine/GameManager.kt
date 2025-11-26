@@ -344,10 +344,8 @@ class GameManager {
                     (!attackerInTokyo && targetInTokyo)
 
             if (shouldHit) {
-                //target.takeDamage(damage)
-
                 // Application des dégâts sur la cible
-               takeDamageLogic(target, damage, attacker)
+                takeDamageLogic(target, damage, attacker)
 
                 if (target.isHuman) {
                     humanHitDamageThisTurn = (humanHitDamageThisTurn ?: 0) + damage
@@ -356,9 +354,17 @@ class GameManager {
                 // Si un joueur DANS Tokyo se fait taper
                 if (target.location == Location.TOKYO && target.alive) {
 
-                    // Si c’est un humain : demander popup
                     if (target.isHuman) {
+                        // Si c’est un humain : demander popup
                         pendingTokyoLeavePlayerId = target.id
+                    } else {
+                        // --- CORRECTION POUR L'IA ---
+                        // Si c'est un BOT, il doit décider de sortir ou non.
+                        // Stratégie simple : Si PV <= 6 après l'attaque, on fuit Tokyo pour ne pas mourir.
+                        if (target.health <= 6) {
+                            target.leaveTokyo()
+                            attacker.enterTokyo()
+                        }
                     }
                 }
                 // CARTE: Venom Spit (Empoisonne la cible)
