@@ -1,7 +1,6 @@
 # king_of_tokyo
 
 Welcome to our game project! 👾
-Developed with passion by **Yasmine MAZGHI**, **Safia FIRITI**, **Hiba IAZZA** et **Douae RATBI**.
 
 This app is inspired by **King of Tokyo** and reimagined with our own custom features and designs.
 We built it in **Android Studio (Kotlin)** and created our own avatars and gameplay logic while staying true to the original concept.
